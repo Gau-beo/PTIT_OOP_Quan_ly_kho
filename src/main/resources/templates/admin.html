@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>Admin</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="container mt-5">
+
+    <div class="card shadow">
+
+        <div class="card-body">
+
+            <h1 class="text-danger">
+                Trang quản trị Admin
+            </h1>
+
+            <hr>
+
+            <p>
+                Chỉ tài khoản ADMIN mới truy cập được
+                trang này.
+            </p>
+
+            <p>
+
+                Tài khoản:
+
+                <strong
+                    sec:authentication="name">
+                </strong>
+
+            </p>
+
+            <a
+                href="/home"
+                class="btn btn-primary">
+
+                Về trang chủ
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
