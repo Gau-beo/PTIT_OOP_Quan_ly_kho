@@ -17,7 +17,6 @@ public class LoHangController {
 
     private final LoHangRepository loHangRepository;
 
-    // Sử dụng Constructor thay cho @Autowired
     public LoHangController(LoHangRepository loHangRepository) {
         this.loHangRepository = loHangRepository;
     }
