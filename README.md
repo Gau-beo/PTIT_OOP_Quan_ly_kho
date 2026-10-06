@@ -4,7 +4,7 @@ Dự án đồ án môn Lập trình hướng đối tượng (OOP) / Phát tri�
 
 ---
 
-## 🛠 Công Nghệ Sử Dụng (Tuân thủ 100% yêu cầu đề bài)
+## 🛠 Công Nghệ Sử Dụng 
 
 | Thành phần | Công nghệ |
 | :--- | :--- |
@@ -17,7 +17,7 @@ Dự án đồ án môn Lập trình hướng đối tượng (OOP) / Phát tri�
 
 ---
 
-## 🚀 Các Tính Năng Nghiệp Vụ Chính (Đúng 3 yêu cầu đề ra)
+## 🚀 Các Tính Năng Nghiệp Vụ Chính 
 
 ### 1. 📝 Ghi Chú Sản Phẩm (`/san-pham`)
 - Hiển thị danh sách sản phẩm cùng toàn bộ thông tin chi tiết (Mã SP, Tên SP, ĐVT, Đơn giá, Tồn kho).
