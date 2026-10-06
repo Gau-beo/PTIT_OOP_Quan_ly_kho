@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/navbar :: header('Ghi chú sản phẩm')}"></head>
+<body>
+    <!-- Navbar -->
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+    <!-- Alert Notifications -->
+    <div th:replace="~{fragments/navbar :: alerts}"></div>
+
+    <div class="container pb-5">
+        <!-- Tiêu đề trang -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold mb-1"><i class="bi bi-sticky text-primary me-2"></i>Quản Lý & Ghi Chú Sản Phẩm</h3>
+                <p class="text-muted mb-0">Theo dõi thông tin chi tiết, hướng dẫn bảo quản, quy chuẩn lưu kho và cập nhật ghi chú sản phẩm</p>
+            </div>
+            <div>
+                <button type="button" class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#modalThemSanPham">
+                    <i class="bi bi-plus-circle me-1"></i> Thêm sản phẩm mới
+                </button>
+            </div>
+        </div>
+
+        <!-- Bảng danh sách sản phẩm và ghi chú -->
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-bold"><i class="bi bi-card-checklist me-2"></i>Danh Sách Sản Phẩm Trong Kho</span>
+                <span class="badge bg-secondary" th:text="${danhSachSanPham.size()} + ' sản phẩm'"></span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 50px;">STT</th>
+                                <th>Mã SP</th>
+                                <th>Tên Sản Phẩm</th>
+                                <th>ĐVT</th>
+                                <th>Đơn Giá</th>
+                                <th>Tồn Kho</th>
+                                <th style="min-width: 300px;">Ghi Chú Sản Phẩm (Lưu Kho / Vận Chuyển)</th>
+                                <th class="text-center" style="width: 150px;">Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="sp, stat : ${danhSachSanPham}">
+                                <td th:text="${stat.count}"></td>
+                                <td class="fw-bold text-primary font-monospace" th:text="${sp.maSanPham}"></td>
+                                <td class="fw-semibold" th:text="${sp.tenSanPham}"></td>
+                                <td th:text="${sp.donViTinh != null ? sp.donViTinh : 'Cái'}"></td>
+                                <td th:text="${sp.donGia != null ? #numbers.formatDecimal(sp.donGia, 0, 'POINT', 0, 'POINT') + ' đ' : '0 đ'}"></td>
+                                <td>
+                                    <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle" 
+                                          th:text="${sp.tongTonKho} + ' (' + ${sp.soLuongLoHang} + ' lô)'">
+                                    </span>
+                                </td>
+                                <td>
+                                    <div th:if="${sp.ghiChu != null and !sp.ghiChu.isEmpty()}" class="d-flex align-items-start gap-2">
+                                        <i class="bi bi-chat-left-text text-primary mt-1"></i>
+                                        <span class="text-break" th:text="${sp.ghiChu}"></span>
+                                    </div>
+                                    <div th:if="${sp.ghiChu == null or sp.ghiChu.isEmpty()}" class="text-muted fst-italic small">
+                                        <i class="bi bi-chat-left text-secondary me-1"></i>Chưa có ghi chú
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 btn-sua-ghi-chu"
+                                            th:data-id="${sp.id}"
+                                            th:data-name="${sp.tenSanPham}"
+                                            th:data-note="${sp.ghiChu != null ? sp.ghiChu : ''}"
+                                            data-bs-toggle="modal" data-bs-target="#modalSuaGhiChu">
+                                        <i class="bi bi-pencil-square"></i> Sửa ghi chú
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr th:if="${danhSachSanPham.empty}">
+                                <td colspan="8" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary"></i>
+                                    Chưa có sản phẩm nào. Hãy bấm "Thêm sản phẩm mới" để bắt đầu!
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CẬP NHẬT GHI CHÚ SẢN PHẨM -->
+    <div class="modal fade" id="modalSuaGhiChu" tabindex="-1" aria-labelledby="modalSuaGhiChuLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="formSuaGhiChu" method="post">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title fw-bold" id="modalSuaGhiChuLabel">
+                            <i class="bi bi-pencil-square me-2"></i>Cập Nhật Ghi Chú Sản Phẩm
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-muted small">Sản phẩm:</label>
+                            <h6 id="tenSanPhamModal" class="fw-bold text-primary"></h6>
+                        </div>
+                        <div class="mb-3">
+                            <label for="inputGhiChu" class="form-label fw-semibold">Nội dung ghi chú / Lưu ý bảo quản:</label>
+                            <textarea id="inputGhiChu" name="ghiChu" class="form-control" rows="4" 
+                                      placeholder="Ví dụ: Bảo quản nơi khô ráo, hàng dễ vỡ, kiểm tra date trước khi xuất kho..."></textarea>
+                            <div class="form-text">Ghi chú giúp thủ kho và nhân viên nắm rõ quy chuẩn bảo quản và xếp dỡ hàng hóa.</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i> Lưu Thay Đổi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: THÊM SẢN PHẨM MỚI -->
+    <div class="modal fade" id="modalThemSanPham" tabindex="-1" aria-labelledby="modalThemSanPhamLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form th:action="@{/san-pham/them}" method="post">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title fw-bold" id="modalThemSanPhamLabel">
+                            <i class="bi bi-plus-circle me-2"></i>Thêm Sản Phẩm Mới
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Mã sản phẩm <span class="text-danger">*</span></label>
+                            <input type="text" name="maSanPham" class="form-control" placeholder="Ví dụ: SP006" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Tên sản phẩm <span class="text-danger">*</span></label>
+                            <input type="text" name="tenSanPham" class="form-control" placeholder="Tên sản phẩm..." required>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">Đơn vị tính</label>
+                                <input type="text" name="donViTinh" class="form-control" placeholder="Cái, Thùng, Hộp...">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">Đơn giá (VNĐ)</label>
+                                <input type="number" name="donGia" class="form-control" placeholder="50000" min="0">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Ghi chú sản phẩm</label>
+                            <textarea name="ghiChu" class="form-control" rows="3" placeholder="Ghi chú bảo quản hoặc lưu ý đặc biệt..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-success"><i class="bi bi-save me-1"></i> Lưu Sản Phẩm</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Lắng nghe sự kiện click mở modal sửa ghi chú
+        document.querySelectorAll('.btn-sua-ghi-chu').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var productId = this.getAttribute('data-id');
+                var productName = this.getAttribute('data-name');
+                var currentNote = this.getAttribute('data-note');
+
+                document.getElementById('tenSanPhamModal').innerText = productName;
+                document.getElementById('inputGhiChu').value = currentNote;
+                document.getElementById('formSuaGhiChu').action = '/san-pham/' + productId + '/ghi-chu';
+            });
+        });
+    </script>
+</body>
+</html>
