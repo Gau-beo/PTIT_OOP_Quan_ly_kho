@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý Nhà Cung Cấp</title>
+</head>
+<body>
+    <h1>Quản lý Nhà Cung Cấp</h1>
+
+    <h2>Thêm Nhà Cung Cấp Mới</h2>
+    <form th:action="@{/nha-cung-cap/them}" th:object="${nhaCungCapMoi}" method="post">
+        <label>Tên NCC:</label>
+        <input type="text" th:field="*{tenNCC}" required /><br><br>
+
+        <label>Địa chỉ:</label>
+        <input type="text" th:field="*{diaChi}" /><br><br>
+
+        <label>Số điện thoại:</label>
+        <input type="text" th:field="*{sdt}" /><br><br>
+
+        <button type="submit">Lưu lại</button>
+    </form>
+
+    <hr>
+
+    <h2>Danh sách Nhà Cung Cấp</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tên NCC</th>
+                <th>Địa chỉ</th>
+                <th>SĐT</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="ncc : ${danhSachNCC}">
+                <td th:text="${ncc.id}"></td>
+                <td th:text="${ncc.tenNCC}"></td>
+                <td th:text="${ncc.diaChi}"></td>
+                <td th:text="${ncc.sdt}"></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
