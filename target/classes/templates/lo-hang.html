@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/navbar :: header('Tra cứu lô hàng')}"></head>
+<body>
+    <!-- Navbar -->
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+    <!-- Alert Notifications -->
+    <div th:replace="~{fragments/navbar :: alerts}"></div>
+
+    <div class="container pb-5">
+        <!-- Tiêu đề trang -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold mb-1"><i class="bi bi-search text-primary me-2"></i>Tra Cứu & Quản Lý Lô Hàng</h3>
+                <p class="text-muted mb-0">Tìm kiếm lô hàng theo mã lô, tên sản phẩm, nhà cung cấp và lọc trạng thái hạn dùng</p>
+            </div>
+            <div>
+                <button type="button" class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#modalThemLoHang">
+                    <i class="bi bi-plus-circle me-1"></i> Nhập lô hàng mới
+                </button>
+            </div>
+        </div>
+
+        <!-- Khung Tìm kiếm & Bộ lọc -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <form th:action="@{/lo-hang}" method="get" class="row g-3 align-items-end">
+                    <div class="col-12 col-md-5">
+                        <label class="form-label fw-semibold small text-muted">Từ khóa tìm kiếm</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                            <input type="text" name="keyword" th:value="${keyword}" class="form-control" 
+                                   placeholder="Nhập mã lô hàng, tên sản phẩm hoặc nhà cung cấp...">
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label class="form-label fw-semibold small text-muted">Trạng thái hạn sử dụng</label>
+                        <select name="trangThai" class="form-select">
+                            <option value="tat_ca" th:selected="${trangThai == 'tat_ca'}">-- Tất cả trạng thái --</option>
+                            <option value="con_han" th:selected="${trangThai == 'con_han'}">🟢 Còn hạn sử dụng</option>
+                            <option value="sap_het_han" th:selected="${trangThai == 'sap_het_han'}">🟡 Sắp hết hạn (&lt; 30 ngày)</option>
+                            <option value="het_han" th:selected="${trangThai == 'het_han'}">🔴 Đã hết hạn</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-3 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1">
+                            <i class="bi bi-funnel-fill me-1"></i> Tra cứu
+                        </button>
+                        <a th:href="@{/lo-hang}" class="btn btn-outline-secondary" title="Xóa bộ lọc">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Bảng danh sách kết quả tra cứu lô hàng -->
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-bold"><i class="bi bi-list-check me-2"></i>Kết Quả Tra Cứu Lô Hàng</span>
+                <span class="badge bg-primary" th:text="'Tìm thấy ' + ${danhSachLoHang.size()} + ' lô hàng'"></span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 50px;">STT</th>
+                                <th>Mã Lô Hàng</th>
+                                <th>Sản Phẩm</th>
+                                <th>Ngày Nhập</th>
+                                <th>Hạn Sử Dụng</th>
+                                <th>Số Lượng</th>
+                                <th>Nhà Cung Cấp</th>
+                                <th>Tình Trạng HSD</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="lh, stat : ${danhSachLoHang}">
+                                <td th:text="${stat.count}"></td>
+                                <td>
+                                    <span class="badge bg-dark-subtle text-dark border font-monospace fs-6" th:text="${lh.maLoHang}"></span>
+                                </td>
+                                <td>
+                                    <div class="fw-bold" th:text="${lh.product != null ? lh.product.tenSanPham : 'Không xác định'}"></div>
+                                    <small class="text-muted" th:text="${lh.product != null ? 'Mã SP: ' + lh.product.maSanPham : ''}"></small>
+                                </td>
+                                <td th:text="${#temporals.format(lh.ngayNhap, 'dd/MM/yyyy')}"></td>
+                                <td>
+                                    <span th:if="${lh.hanSuDung != null}" 
+                                          th:classappend="${lh.isHetHan() ? 'text-danger fw-bold' : (lh.isSapHetHan() ? 'text-warning-emphasis fw-bold' : '')}"
+                                          th:text="${#temporals.format(lh.hanSuDung, 'dd/MM/yyyy')}">
+                                    </span>
+                                    <span th:if="${lh.hanSuDung == null}" class="text-muted small">Không có HSD</span>
+                                </td>
+                                <td>
+                                    <span class="fw-bold" th:text="${lh.soLuong}"></span>
+                                    <span class="text-muted small" th:text="${lh.product != null ? lh.product.donViTinh : ''}"></span>
+                                </td>
+                                <td th:text="${lh.nhaCungCap != null and !lh.nhaCungCap.isEmpty() ? lh.nhaCungCap : '-'}"></td>
+                                <td>
+                                    <span th:if="${lh.isHetHan()}" class="badge bg-danger">
+                                        <i class="bi bi-x-circle me-1"></i>Đã hết hạn
+                                    </span>
+                                    <span th:if="${lh.isSapHetHan()}" class="badge bg-warning text-dark">
+                                        <i class="bi bi-exclamation-triangle me-1"></i>Sắp hết hạn
+                                    </span>
+                                    <span th:if="${!lh.isHetHan() and !lh.isSapHetHan() and lh.hanSuDung != null}" class="badge bg-success">
+                                        <i class="bi bi-check-circle me-1"></i>Còn hạn
+                                    </span>
+                                    <span th:if="${lh.hanSuDung == null}" class="badge bg-secondary">
+                                        Không áp dụng
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr th:if="${danhSachLoHang.empty}">
+                                <td colspan="8" class="text-center py-5 text-muted">
+                                    <i class="bi bi-search fs-1 d-block mb-2 text-secondary"></i>
+                                    Không tìm thấy lô hàng nào phù hợp với điều kiện tra cứu!
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: THÊM LÔ HÀNG MỚI -->
+    <div class="modal fade" id="modalThemLoHang" tabindex="-1" aria-labelledby="modalThemLoHangLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form th:action="@{/lo-hang/them}" method="post">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title fw-bold" id="modalThemLoHangLabel">
+                            <i class="bi bi-box-arrow-in-down me-2"></i>Nhập Lô Hàng Mới
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Sản phẩm <span class="text-danger">*</span></label>
+                            <select name="productId" class="form-select" required>
+                                <option value="" disabled selected>-- Chọn sản phẩm trong kho --</option>
+                                <option th:each="sp : ${danhSachSanPham}" th:value="${sp.id}" 
+                                        th:text="${sp.maSanPham + ' - ' + sp.tenSanPham}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Mã lô hàng <span class="text-danger">*</span></label>
+                            <input type="text" name="maLoHang" class="form-control" placeholder="Ví dụ: LH-2026-009" required>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">Ngày nhập kho <span class="text-danger">*</span></label>
+                                <input type="date" name="ngayNhap" class="form-control" 
+                                       th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">Hạn sử dụng</label>
+                                <input type="date" name="hanSuDung" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">Số lượng <span class="text-danger">*</span></label>
+                                <input type="number" name="soLuong" class="form-control" min="1" value="100" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">Nhà cung cấp</label>
+                                <input type="text" name="nhaCungCap" class="form-control" placeholder="Tên nhà cung cấp">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i> Lưu Lô Hàng</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
