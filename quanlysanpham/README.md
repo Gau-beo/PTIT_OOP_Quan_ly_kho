@@ -140,3 +140,37 @@ kềnh (3<=5) sẽ xuất hiện trong danh sách này.
 Import 3 request POST mẫu ở trên -> Send -> lấy `id` trả về -> test tiếp
 GET/PUT/DELETE theo id đó. Sau đó gọi `GET /api/san-pham/canh-bao-ton-kho`
 để kiểm tra tính năng cảnh báo.
+
+## 7. Frontend (HTML + CSS + JavaScript thuần)
+
+Nằm trong `src/main/resources/static/`. Spring Boot tự phục vụ thư mục này, nên
+**không cần cài thêm gì**: chạy backend rồi mở `http://localhost:8080/` là thấy giao diện
+(đổi cổng nếu project nhóm dùng cổng khác). Frontend gọi API cùng origin nên không cần cấu hình CORS.
+
+```
+static/
+  index.html        khung trang, 3 tab + 3 hộp thoại (form sản phẩm, form danh mục, xác nhận)
+  css/style.css     giao diện (màu, chữ, bảng, huy hiệu loại sản phẩm, thanh đo tồn kho)
+  js/app.js         gọi API và xử lý giao diện
+```
+
+Các màn hình:
+- **Sản phẩm**: bảng sản phẩm, tìm theo tên (không phân biệt dấu), lọc theo danh mục
+  (gọi `GET /api/san-pham/danh-muc/{id}`) và theo loại; thêm, sửa, xóa. Form chọn loại nào
+  thì hiện đúng các ô riêng của loại đó; khi sửa thì khóa ô loại (backend không cho đổi loại).
+- **Danh mục**: thêm, sửa, xóa danh mục.
+- **Cảnh báo tồn kho**: gọi `GET /api/san-pham/canh-bao-ton-kho`, hết hàng xếp trước,
+  có số đếm trên tab. Thanh đo tồn kho có vạch đen đánh dấu ngưỡng cảnh báo.
+
+Thêm loại sản phẩm mới ở frontend: thêm một mục vào `LOAI` và `ICONS` trong `js/app.js`
+(cùng một enum mới ở `LoaiSanPham.java` và lớp con tương ứng ở backend).
+
+### Các chỉnh sửa backend đi kèm frontend
+
+- `SanPhamResponseDTO` trả thêm thuộc tính riêng từng loại (`ngayHetHan`, `mucDoDeVo`,
+  `yeuCauDongGoiDacBiet`, `mucDoRuiRo`, `thoiGianBaoHanh`, `congSuat`, `phuPhiVanChuyen`)
+  để form Sửa điền sẵn được dữ liệu. `SanPhamServiceImpl.chuyenSangDTO()` điền các trường này bằng `instanceof`.
+- `DanhMuc`: bỏ `cascade = ALL`. Trước đó xóa một danh mục sẽ kéo theo xóa hết sản phẩm của nó.
+- `DanhMucServiceImpl.xoa()`: từ chối xóa danh mục còn sản phẩm (HTTP 409 kèm thông báo rõ ràng).
+- `GlobalExceptionHandler`: thêm xử lý `IllegalArgumentException` (400, ví dụ đổi loại sản phẩm)
+  và `IllegalStateException` (409).

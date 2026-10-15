@@ -6,6 +6,11 @@ import com.nhom11.quanlykho.exception.ResourceNotFoundException;
 import com.nhom11.quanlykho.factory.SanPhamFactory;
 import com.nhom11.quanlykho.model.DanhMuc;
 import com.nhom11.quanlykho.model.SanPham;
+import com.nhom11.quanlykho.model.SanPhamCongKenh;
+import com.nhom11.quanlykho.model.SanPhamDeVo;
+import com.nhom11.quanlykho.model.SanPhamDienTu;
+import com.nhom11.quanlykho.model.SanPhamHoaChat;
+import com.nhom11.quanlykho.model.SanPhamThucPham;
 import com.nhom11.quanlykho.repository.DanhMucRepository;
 import com.nhom11.quanlykho.repository.SanPhamRepository;
 import com.nhom11.quanlykho.service.SanPhamService;
@@ -96,7 +101,7 @@ public class SanPhamServiceImpl implements SanPhamService {
      * của lớp con thực sự (SanPhamThucPham, SanPhamDienTu, ...).
      */
     private SanPhamResponseDTO chuyenSangDTO(SanPham sanPham) {
-        return SanPhamResponseDTO.builder()
+        SanPhamResponseDTO.SanPhamResponseDTOBuilder builder = SanPhamResponseDTO.builder()
                 .id(sanPham.getId())
                 .loaiSanPham(sanPham.getLoaiSanPham())
                 .tenSanPham(sanPham.getTenSanPham())
@@ -106,7 +111,21 @@ public class SanPhamServiceImpl implements SanPhamService {
                 .danhMucId(sanPham.getDanhMuc() != null ? sanPham.getDanhMuc().getId() : null)
                 .tenDanhMuc(sanPham.getDanhMuc() != null ? sanPham.getDanhMuc().getTenDanhMuc() : null)
                 .thongTinRieng(sanPham.getThongTinRieng())
-                .canCanhBaoTonKho(sanPham.canCanhBaoTonKho())
-                .build();
+                .canCanhBaoTonKho(sanPham.canCanhBaoTonKho());
+
+        // Điền thêm thuộc tính riêng của đúng lớp con để form Sửa có dữ liệu gốc.
+        if (sanPham instanceof SanPhamThucPham tp) {
+            builder.ngayHetHan(tp.getNgayHetHan());
+        } else if (sanPham instanceof SanPhamDeVo dv) {
+            builder.mucDoDeVo(dv.getMucDoDeVo()).yeuCauDongGoiDacBiet(dv.getYeuCauDongGoiDacBiet());
+        } else if (sanPham instanceof SanPhamHoaChat hc) {
+            builder.mucDoRuiRo(hc.getMucDoRuiRo());
+        } else if (sanPham instanceof SanPhamDienTu dt) {
+            builder.thoiGianBaoHanh(dt.getThoiGianBaoHanh()).congSuat(dt.getCongSuat());
+        } else if (sanPham instanceof SanPhamCongKenh ck) {
+            builder.phuPhiVanChuyen(ck.getPhuPhiVanChuyen());
+        }
+
+        return builder.build();
     }
 }

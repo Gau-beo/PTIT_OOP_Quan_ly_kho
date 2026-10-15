@@ -1,0 +1,250 @@
+/* ==========================================================
+   Quản lý sản phẩm: giao diện kho hàng
+   Ý tưởng: nền bê tông xám lạnh, mực xanh đen, ký hiệu xếp dỡ
+   làm huy hiệu cho từng loại sản phẩm.
+   ========================================================== */
+
+:root {
+  --paper: #eef1f3;
+  --surface: #ffffff;
+  --ink: #17232d;
+  --ink-2: #4a5963;
+  --ink-3: #6b7a85;
+  --rule: #d3d9dd;
+  --rule-soft: #e4e8eb;
+
+  --brand: #1d4e6b;
+  --brand-hover: #163e56;
+  --brand-tint: #e2edf3;
+
+  --ok: #2f7d5b;
+  --warn: #b26a00;
+  --warn-bar: #e8a317;
+  --warn-bg: #fff1d1;
+  --danger: #b3261e;
+  --danger-hover: #8f1d17;
+  --danger-bg: #fce4e1;
+
+  --radius: 6px;
+  --font-text: "Barlow", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-head: "Barlow Semi Condensed", "Barlow", "Segoe UI", system-ui, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+h1, h2 { font-family: var(--font-head); margin: 0; letter-spacing: 0.005em; }
+
+.wrap { width: min(1180px, 100% - 2rem); margin-inline: auto; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+/* ---------- Đầu trang & tab ---------- */
+.app-head { background: var(--surface); border-bottom: 1px solid var(--rule); }
+.head-row { padding-top: 1.25rem; }
+.app-head h1 { font-size: 1.75rem; font-weight: 700; line-height: 1.15; }
+.app-sub { margin: 0.15rem 0 0; color: var(--ink-3); font-size: 0.9375rem; }
+
+.tabs { display: flex; gap: 0.25rem; margin-top: 0.75rem; overflow-x: auto; }
+.tab {
+  appearance: none; border: 0; background: none; cursor: pointer;
+  font: inherit; font-weight: 500; color: var(--ink-2);
+  padding: 0.65rem 0.9rem; border-bottom: 3px solid transparent;
+  display: inline-flex; align-items: center; gap: 0.45rem; white-space: nowrap;
+}
+.tab:hover { color: var(--ink); }
+.tab.is-active { color: var(--brand); border-bottom-color: var(--brand); font-weight: 600; }
+
+.count {
+  min-width: 1.4rem; padding: 0 0.4rem; border-radius: 999px;
+  background: var(--warn-bar); color: #3b2500;
+  font-family: var(--font-head); font-weight: 700; font-size: 0.875rem; line-height: 1.4rem; text-align: center;
+}
+
+main { padding-block: 1.5rem 3rem; }
+
+.view { display: none; }
+.view.is-active { display: block; }
+
+.banner {
+  margin-bottom: 1rem; padding: 0.75rem 1rem; border-radius: var(--radius);
+  background: var(--danger-bg); color: #6d1712; border: 1px solid #efb4ae;
+}
+
+/* ---------- Thanh công cụ & ô nhập ---------- */
+.toolbar { display: flex; flex-wrap: wrap; gap: 0.75rem 1rem; align-items: flex-end; margin-bottom: 1rem; }
+.grow { flex: 1 1 14rem; }
+.view-intro { margin: 0; color: var(--ink-2); align-self: center; }
+
+.field label { display: block; margin-bottom: 0.25rem; font-size: 0.875rem; font-weight: 600; color: var(--ink-2); }
+.hint { margin: 0.25rem 0 0; font-size: 0.8125rem; color: var(--ink-3); }
+
+input[type="text"], input[type="search"], input[type="number"], input[type="date"], select {
+  width: 100%; min-height: 2.5rem; padding: 0.45rem 0.65rem;
+  font: inherit; color: var(--ink); background: var(--surface);
+  border: 1px solid #b9c2c8; border-radius: var(--radius);
+}
+input:hover, select:hover { border-color: #8b99a2; }
+input:focus-visible, select:focus-visible { outline: 2px solid var(--brand); outline-offset: 0; border-color: var(--brand); }
+select:disabled { background: var(--rule-soft); color: var(--ink-2); }
+
+.toolbar select { min-width: 11rem; }
+
+.result-note { margin: 0 0 0.5rem; font-size: 0.875rem; color: var(--ink-3); min-height: 1.3em; }
+
+/* ---------- Nút ---------- */
+.btn {
+  appearance: none; cursor: pointer; font: inherit; font-weight: 600;
+  min-height: 2.5rem; padding: 0.45rem 1.1rem; border-radius: var(--radius);
+  border: 1px solid transparent; white-space: nowrap;
+}
+.btn.primary { background: var(--brand); color: #fff; }
+.btn.primary:hover { background: var(--brand-hover); }
+.btn.ghost { background: transparent; color: var(--ink); border-color: #b9c2c8; }
+.btn.ghost:hover { background: var(--surface); border-color: #8b99a2; }
+.btn.danger { background: var(--danger); color: #fff; }
+.btn.danger:hover { background: var(--danger-hover); }
+.btn:disabled { opacity: 0.6; cursor: progress; }
+
+.icon-btn {
+  appearance: none; border: 0; background: none; cursor: pointer;
+  font-size: 1.6rem; line-height: 1; color: var(--ink-3);
+  width: 2.25rem; height: 2.25rem; border-radius: var(--radius);
+}
+.icon-btn:hover { background: var(--rule-soft); color: var(--ink); }
+
+.link-btn {
+  appearance: none; border: 0; background: none; cursor: pointer;
+  font: inherit; font-weight: 600; color: var(--brand);
+  padding: 0.3rem 0.5rem; border-radius: 4px;
+}
+.link-btn:hover { background: var(--brand-tint); }
+.link-btn.danger { color: var(--danger); }
+.link-btn.danger:hover { background: var(--danger-bg); }
+
+/* ---------- Bảng ---------- */
+/* position: relative giữ các phần tử .sr-only (absolute) nằm trong vùng cuộn của bảng, tránh tràn ngang cả trang */
+.sheet { position: relative; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); overflow-x: auto; }
+.sheet.narrow { max-width: 44rem; }
+
+table { width: 100%; border-collapse: collapse; }
+th {
+  text-align: left; font-size: 0.875rem; font-weight: 600; color: var(--ink-2);
+  padding: 0.7rem 0.9rem; border-bottom: 2px solid var(--ink); white-space: nowrap;
+}
+td { padding: 0.75rem 0.9rem; border-bottom: 1px solid var(--rule-soft); vertical-align: middle; }
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr:hover td { background: #f7f9fa; }
+
+.num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--font-head); font-weight: 600; font-size: 1.0625rem; }
+th.num { font-family: var(--font-text); font-size: 0.875rem; }
+.col-id { width: 3.5rem; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+td.col-id { font-size: 0.9375rem; }
+.col-stock { min-width: 9.5rem; }
+.col-act { width: 1%; white-space: nowrap; text-align: right; }
+
+.name { font-weight: 600; }
+.sub { display: block; font-size: 0.875rem; color: var(--ink-3); }
+.muted { color: var(--ink-3); }
+.info-bad { color: var(--danger); font-weight: 600; }
+
+tr.row-warn td:first-child { box-shadow: inset 4px 0 0 var(--warn-bar); }
+tr.row-out td:first-child { box-shadow: inset 4px 0 0 var(--danger); }
+
+.empty { margin: 0; padding: 2.5rem 1rem; text-align: center; color: var(--ink-2); }
+
+/* ---------- Huy hiệu loại sản phẩm (ký hiệu xếp dỡ) ---------- */
+.t-THUC_PHAM { --c: #3e7b2e; }
+.t-DE_VO     { --c: #0f7c86; }
+.t-HOA_CHAT  { --c: #c2410c; }
+.t-DIEN_TU   { --c: #6a4bb0; }
+.t-CONG_KENH { --c: #7a6140; }
+
+.kind { display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; }
+.stamp {
+  display: inline-grid; place-items: center; flex: none;
+  width: 1.9rem; height: 1.9rem; border-radius: 5px;
+  color: var(--c, var(--ink-2));
+  border: 1.5px solid var(--c, var(--ink-2));
+  background: color-mix(in srgb, var(--c, #888) 9%, #fff);
+}
+.stamp svg { width: 1.15rem; height: 1.15rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- Thanh đo tồn kho ---------- */
+.stock { display: flex; align-items: baseline; gap: 0.5rem; }
+.qty { font-family: var(--font-head); font-weight: 700; font-size: 1.25rem; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.flag { font-size: 0.8125rem; font-weight: 600; padding: 0.05rem 0.45rem; border-radius: 4px; }
+.flag.low { background: var(--warn-bg); color: #7a4800; }
+.flag.out { background: var(--danger-bg); color: #8f1d17; }
+
+.gauge { position: relative; display: block; width: 7.5rem; height: 6px; margin-top: 0.3rem; background: var(--rule-soft); border-radius: 3px; }
+.gauge i { position: absolute; inset: 0 auto 0 0; border-radius: 3px; background: var(--ok); }
+.gauge.low i { background: var(--warn-bar); }
+.gauge.out i { background: var(--danger); }
+.gauge b { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; background: var(--ink); border-radius: 1px; }
+.gauge-note { display: block; margin-top: 0.2rem; font-size: 0.8125rem; color: var(--ink-3); }
+
+/* ---------- Hộp thoại ---------- */
+dialog {
+  width: min(40rem, 100% - 1.5rem); max-height: calc(100dvh - 2rem);
+  padding: 0; border: 0; border-radius: 10px; color: var(--ink); background: var(--surface);
+  box-shadow: 0 18px 50px rgba(23, 35, 45, 0.28);
+}
+dialog::backdrop { background: rgba(23, 35, 45, 0.5); }
+dialog[open] { animation: dialog-in 0.16s ease-out; }
+@keyframes dialog-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.dialog-form { padding: 1.25rem 1.5rem 1.5rem; }
+.dialog-form.small { width: min(28rem, 100%); }
+dialog:has(.dialog-form.small) { width: min(28rem, 100% - 1.5rem); }
+.dialog-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+.dialog-head h2 { font-size: 1.375rem; font-weight: 700; }
+.dialog-foot { display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1.5rem; }
+.confirm-text { margin: 0; color: var(--ink-2); }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem 1rem; }
+.span-2 { grid-column: 1 / -1; }
+
+.type-box { margin: 1.25rem 0 0; padding: 0.9rem 1rem 1.1rem; border: 1px solid var(--rule); border-radius: var(--radius); background: #f7f9fa; }
+.type-box legend { padding: 0 0.4rem; font-family: var(--font-head); font-weight: 600; font-size: 1.0625rem; }
+.type-box .kind { gap: 0.45rem; }
+.check { display: flex; align-items: center; gap: 0.55rem; min-height: 2.5rem; font-weight: 500; }
+.check input { width: 1.15rem; height: 1.15rem; accent-color: var(--brand); }
+
+/* ---------- Thông báo ---------- */
+.toasts { position: fixed; left: 50%; bottom: 1.25rem; transform: translateX(-50%); display: grid; gap: 0.5rem; z-index: 50; width: min(28rem, 100% - 2rem); }
+.toast {
+  padding: 0.7rem 1rem; border-radius: var(--radius); background: var(--ink); color: #fff;
+  box-shadow: 0 8px 24px rgba(23, 35, 45, 0.25); animation: toast-in 0.18s ease-out;
+}
+.toast.error { background: var(--danger); }
+.toast.out { opacity: 0; transition: opacity 0.3s; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ---------- Màn hình nhỏ ---------- */
+@media (max-width: 640px) {
+  .app-head h1 { font-size: 1.5rem; }
+  .toolbar select, .toolbar .btn { width: 100%; }
+  .toolbar .field { flex: 1 1 100%; }
+  .form-grid { grid-template-columns: 1fr; }
+  .dialog-form { padding: 1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quản lý sản phẩm</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="app-head">
+    <div class="wrap head-row">
+      <div>
+        <h1>Quản lý sản phẩm</h1>
+        <p class="app-sub">Hệ thống quản lý xuất nhập kho hàng</p>
+      </div>
+    </div>
+    <nav class="wrap tabs" aria-label="Chức năng">
+      <button type="button" class="tab is-active" data-view="san-pham" aria-current="page">Sản phẩm</button>
+      <button type="button" class="tab" data-view="danh-muc">Danh mục</button>
+      <button type="button" class="tab" data-view="canh-bao">
+        Cảnh báo tồn kho
+        <span class="count" id="alertCount" hidden>0</span>
+      </button>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div id="banner" class="banner" role="alert" hidden></div>
+
+    <!-- ===== Sản phẩm ===== -->
+    <section id="view-san-pham" class="view is-active" aria-label="Sản phẩm">
+      <div class="toolbar">
+        <div class="field grow">
+          <label for="filterKeyword">Tìm sản phẩm</label>
+          <input id="filterKeyword" type="search" placeholder="Nhập tên sản phẩm" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="filterDanhMuc">Danh mục</label>
+          <select id="filterDanhMuc"><option value="">Tất cả danh mục</option></select>
+        </div>
+        <div class="field">
+          <label for="filterLoai">Loại sản phẩm</label>
+          <select id="filterLoai"></select>
+        </div>
+        <button type="button" class="btn primary" id="btnAddProduct">Thêm sản phẩm</button>
+      </div>
+
+      <p class="result-note" id="productNote" aria-live="polite"></p>
+
+      <div class="sheet">
+        <table>
+          <thead>
+            <tr>
+              <th class="col-id">Mã</th>
+              <th>Sản phẩm</th>
+              <th>Loại</th>
+              <th>Danh mục</th>
+              <th class="col-stock">Tồn kho</th>
+              <th class="num">Ngưỡng</th>
+              <th>Thông tin riêng</th>
+              <th class="col-act"><span class="sr-only">Thao tác</span></th>
+            </tr>
+          </thead>
+          <tbody id="productRows"></tbody>
+        </table>
+        <p class="empty" id="productEmpty" hidden></p>
+      </div>
+    </section>
+
+    <!-- ===== Danh mục ===== -->
+    <section id="view-danh-muc" class="view" aria-label="Danh mục">
+      <div class="toolbar">
+        <p class="view-intro grow">Danh mục dùng để nhóm sản phẩm. Mỗi sản phẩm thuộc tối đa một danh mục.</p>
+        <button type="button" class="btn primary" id="btnAddCategory">Thêm danh mục</button>
+      </div>
+      <div class="sheet narrow">
+        <table>
+          <thead>
+            <tr>
+              <th class="col-id">Mã</th>
+              <th>Tên danh mục</th>
+              <th class="col-act"><span class="sr-only">Thao tác</span></th>
+            </tr>
+          </thead>
+          <tbody id="categoryRows"></tbody>
+        </table>
+        <p class="empty" id="categoryEmpty" hidden>Chưa có danh mục nào. Chọn Thêm danh mục để phân nhóm sản phẩm.</p>
+      </div>
+    </section>
+
+    <!-- ===== Cảnh báo tồn kho ===== -->
+    <section id="view-canh-bao" class="view" aria-label="Cảnh báo tồn kho">
+      <div class="toolbar">
+        <p class="view-intro grow" id="alertSummary" aria-live="polite"></p>
+        <button type="button" class="btn ghost" id="btnReloadAlerts">Tải lại</button>
+      </div>
+      <div class="sheet">
+        <table>
+          <thead>
+            <tr>
+              <th>Sản phẩm</th>
+              <th>Loại</th>
+              <th>Danh mục</th>
+              <th class="col-stock">Tồn kho</th>
+              <th class="col-act"><span class="sr-only">Thao tác</span></th>
+            </tr>
+          </thead>
+          <tbody id="alertRows"></tbody>
+        </table>
+        <p class="empty" id="alertEmpty" hidden>Tồn kho đang ổn. Không có sản phẩm nào chạm ngưỡng cảnh báo.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Hộp thoại thêm/sửa sản phẩm ===== -->
+  <dialog id="productDialog" aria-labelledby="productDialogTitle">
+    <form id="productForm" class="dialog-form">
+      <header class="dialog-head">
+        <h2 id="productDialogTitle">Thêm sản phẩm</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Đóng">&times;</button>
+      </header>
+
+      <div class="form-grid">
+        <div class="field span-2">
+          <label for="f_loai">Loại sản phẩm</label>
+          <select id="f_loai" required></select>
+          <p class="hint" id="loaiHint" hidden>Không đổi được loại sau khi đã tạo sản phẩm.</p>
+        </div>
+        <div class="field span-2">
+          <label for="f_ten">Tên sản phẩm</label>
+          <input id="f_ten" type="text" required maxlength="255" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="f_dvt">Đơn vị tính</label>
+          <input id="f_dvt" type="text" maxlength="50" placeholder="Hộp, cái, bộ" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="f_dm">Danh mục</label>
+          <select id="f_dm"></select>
+        </div>
+        <div class="field">
+          <label for="f_ton">Số lượng tồn</label>
+          <input id="f_ton" type="number" min="0" step="1" required>
+        </div>
+        <div class="field">
+          <label for="f_nguong">Ngưỡng cảnh báo</label>
+          <input id="f_nguong" type="number" min="0" step="1" required>
+          <p class="hint">Cảnh báo khi tồn kho bằng hoặc thấp hơn số này.</p>
+        </div>
+      </div>
+
+      <fieldset class="type-box">
+        <legend id="typeLegend"></legend>
+        <div class="form-grid" id="typeFields"></div>
+      </fieldset>
+
+      <footer class="dialog-foot">
+        <button type="button" class="btn ghost" data-close>Hủy</button>
+        <button type="submit" class="btn primary" id="productSubmit">Lưu sản phẩm</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- ===== Hộp thoại thêm/sửa danh mục ===== -->
+  <dialog id="categoryDialog" aria-labelledby="categoryDialogTitle">
+    <form id="categoryForm" class="dialog-form small">
+      <header class="dialog-head">
+        <h2 id="categoryDialogTitle">Thêm danh mục</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Đóng">&times;</button>
+      </header>
+      <div class="field">
+        <label for="c_ten">Tên danh mục</label>
+        <input id="c_ten" type="text" required maxlength="255" autocomplete="off">
+      </div>
+      <footer class="dialog-foot">
+        <button type="button" class="btn ghost" data-close>Hủy</button>
+        <button type="submit" class="btn primary" id="categorySubmit">Lưu danh mục</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- ===== Hộp thoại xác nhận ===== -->
+  <dialog id="confirmDialog" aria-labelledby="confirmTitle">
+    <form method="dialog" class="dialog-form small">
+      <header class="dialog-head">
+        <h2 id="confirmTitle">Xác nhận</h2>
+      </header>
+      <p id="confirmMessage" class="confirm-text"></p>
+      <footer class="dialog-foot">
+        <button type="submit" value="cancel" class="btn ghost">Hủy</button>
+        <button type="submit" value="ok" class="btn danger" id="confirmOk">Xóa</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <div id="toasts" class="toasts" role="status" aria-live="polite"></div>
+
+  <script src="js/app.js" defer></script>
+</body>
+</html>

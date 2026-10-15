@@ -3,6 +3,7 @@ package com.nhom11.quanlykho.service.impl;
 import com.nhom11.quanlykho.exception.ResourceNotFoundException;
 import com.nhom11.quanlykho.model.DanhMuc;
 import com.nhom11.quanlykho.repository.DanhMucRepository;
+import com.nhom11.quanlykho.repository.SanPhamRepository;
 import com.nhom11.quanlykho.service.DanhMucService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.List;
 public class DanhMucServiceImpl implements DanhMucService {
 
     private final DanhMucRepository danhMucRepository;
+    private final SanPhamRepository sanPhamRepository;
 
     @Override
     public DanhMuc taoMoi(String tenDanhMuc) {
@@ -33,6 +35,10 @@ public class DanhMucServiceImpl implements DanhMucService {
     public void xoa(Integer id) {
         if (!danhMucRepository.existsById(id)) {
             throw new ResourceNotFoundException("Không tìm thấy danh mục có id = " + id);
+        }
+        if (sanPhamRepository.existsByDanhMuc_Id(id)) {
+            throw new IllegalStateException(
+                    "Không thể xóa danh mục đang có sản phẩm. Hãy chuyển hoặc xóa các sản phẩm thuộc danh mục này trước.");
         }
         danhMucRepository.deleteById(id);
     }

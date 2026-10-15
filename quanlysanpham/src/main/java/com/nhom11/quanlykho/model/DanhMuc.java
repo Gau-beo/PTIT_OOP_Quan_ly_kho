@@ -25,7 +25,8 @@ public class DanhMuc {
     @Column(name = "ten_danh_muc", nullable = false)
     private String tenDanhMuc;
 
-    @OneToMany(mappedBy = "danhMuc", cascade = CascadeType.ALL, orphanRemoval = false)
+    // Không cascade: xóa danh mục không được kéo theo xóa sản phẩm.
+    @OneToMany(mappedBy = "danhMuc")
     @JsonIgnore
     private List<SanPham> danhSachSanPham = new ArrayList<>();
 }
