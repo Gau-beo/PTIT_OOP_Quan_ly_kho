@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
 
 @Service
 @Transactional
@@ -23,7 +25,6 @@ public class PhieuXuatService {
     private final ProductRepository productRepository;
     private final NguoiDungRepository nguoiDungRepository;
 
-    // Sử dụng Constructor Injection giống như ProductService
     public PhieuXuatService(PhieuXuatRepository phieuXuatRepository,
                             ProductRepository productRepository,
                             NguoiDungRepository nguoiDungRepository) {
@@ -42,16 +43,21 @@ public class PhieuXuatService {
             for (ChiTietPhieuXuatRequest item : request.getChiTietList()) {
                 Product product = productRepository.findById(item.getSanPhamId())
                         .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm ID: " + item.getSanPhamId()));
-
+                    
                 // Kiểm tra tổng tồn kho
                 if (product.getTongTonKho() < item.getSoLuong()) {
                     throw new IllegalArgumentException("Sản phẩm '" + product.getTenSanPham() + "' không đủ số lượng tồn kho!");
                 }
 
-                // Logic trừ tồn kho theo từng lô hàng (FIFO)
-                int soLuongCanXuat = item.getSoLuong();
-                if (product.getLoHangs() != null) {
-                    for (LoHang loHang : product.getLoHangs()) {
+                List<LoHang> loHangs = product.getLoHangs();
+                if (loHangs != null && !loHangs.isEmpty()) {
+
+                    // --- SẮP XẾP FIFO (Lô nào nhập trước xuất trước) ---
+                    loHangs.sort(Comparator.comparing(LoHang::getNgayNhap, Comparator.nullsLast(Comparator.naturalOrder())));
+                    
+                    int soLuongCanXuat = item.getSoLuong();
+
+                    for (LoHang loHang : loHangs) {
                         if (soLuongCanXuat <= 0) break;
 
                         int soLuongHienTai = loHang.getSoLuong();
@@ -65,11 +71,13 @@ public class PhieuXuatService {
                             }
                         }
                     }
-                }
 
-                // Kiểm tra xem đã trừ hết số lượng cần xuất chưa
-                if (soLuongCanXuat > 0) {
-                    throw new IllegalArgumentException("Các lô hàng của sản phẩm '" + product.getTenSanPham() + "' không đủ để xuất!");
+                    // Kiểm tra xem đã trừ đủ chưa
+                    if (soLuongCanXuat > 0) {
+                        throw new IllegalArgumentException("Các lô hàng của sản phẩm '" + product.getTenSanPham() + "' không đủ để xuất!");
+                    }
+                } else {
+                    throw new IllegalArgumentException("Sản phẩm '" + product.getTenSanPham() + "' chưa có lô hàng nào trong kho!");
                 }
 
                 productRepository.save(product);
