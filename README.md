@@ -8,7 +8,7 @@ Dự án đồ án môn Lập trình hướng đối tượng (OOP) / Phát tri�
 
 | Thành phần | Công nghệ |
 | :--- | :--- |
-| **Ngôn ngữ lập trình** | Java (JDK 21) |
+| **Ngôn ngữ lập trình** | Java (JDK 25 LTS) |
 | **Framework Backend** | Spring Boot (Spring Web, Spring Data JPA) |
 | **Giao diện người dùng (Frontend)** | **Bootstrap 5** (UI/UX hiện đại, responsive) + **Thymeleaf Template Engine** |
 | **Cơ sở dữ liệu** | MySQL |

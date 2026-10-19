@@ -1,0 +1,4 @@
+$kind: http-request
+url: http://localhost:8080/api/products/thong-ke
+method: GET
+order: 1000

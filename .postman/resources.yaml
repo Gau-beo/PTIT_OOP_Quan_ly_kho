@@ -1,0 +1,13 @@
+# Use this workspace to collaborate
+workspace:
+  id: 1c48f872-0f7c-4ed4-8b35-5d760add68f8
+
+localResources:
+  collections:
+    - ../PTIT_OOP_Quan_Ly_Kho_APIs
+
+# Each entry here maps a local resource to one or more corresponding objects in Postman Cloud
+
+cloudResources:
+  collections:
+    ../PTIT_OOP_Quan_Ly_Kho_APIs: a9b1c2d3-e4f5-4a6b-8c7d-9e0f1a2b3c4d

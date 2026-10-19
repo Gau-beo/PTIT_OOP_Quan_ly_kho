@@ -1,0 +1,6 @@
+$kind: collection
+description: |-
+  Bộ sưu tập Postman kiểm thử các REST API cho hệ thống Quản lý kho (PTIT OOP):
+  - Ghi chú sản phẩm
+  - Tra cứu lô hàng
+  - Báo cáo & thống kê
