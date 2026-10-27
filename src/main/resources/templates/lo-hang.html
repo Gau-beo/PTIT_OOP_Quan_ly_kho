@@ -16,7 +16,7 @@
                 <p class="text-muted mb-0">Tìm kiếm lô hàng theo mã lô, tên sản phẩm, nhà cung cấp và lọc trạng thái hạn dùng</p>
             </div>
             <div>
-                <button type="button" class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#modalThemLoHang">
+                <button type="button" sec:authorize="hasRole('ADMIN')" class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#modalThemLoHang">
                     <i class="bi bi-plus-circle me-1"></i> Nhập lô hàng mới
                 </button>
             </div>

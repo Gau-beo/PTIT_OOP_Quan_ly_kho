@@ -16,7 +16,7 @@
                 <p class="text-muted mb-0">Theo dõi thông tin chi tiết, hướng dẫn bảo quản, quy chuẩn lưu kho và cập nhật ghi chú sản phẩm</p>
             </div>
             <div>
-                <button type="button" class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#modalThemSanPham">
+                <button type="button" sec:authorize="hasRole('ADMIN')" class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#modalThemSanPham">
                     <i class="bi bi-plus-circle me-1"></i> Thêm sản phẩm mới
                 </button>
             </div>
@@ -70,7 +70,7 @@
                                     </div>
                                 </td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 btn-sua-ghi-chu"
+                                    <button type="button" sec:authorize="hasRole('ADMIN')" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1 btn-sua-ghi-chu"
                                             th:data-id="${sp.id}"
                                             th:data-name="${sp.tenSanPham}"
                                             th:data-note="${sp.ghiChu != null ? sp.ghiChu : ''}"

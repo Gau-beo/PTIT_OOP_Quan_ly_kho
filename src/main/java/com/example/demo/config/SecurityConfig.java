@@ -2,6 +2,7 @@ package com.example.demo.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -51,6 +52,16 @@ public class SecurityConfig {
                 // USER và ADMIN
                 .requestMatchers("/user/**")
                 .hasAnyRole("USER", "ADMIN")
+
+                // Các thao tác GHI dữ liệu kho (lập phiếu nhập, nhà cung cấp, sản phẩm, lô hàng): chỉ ADMIN.
+                // USER vẫn XEM (GET) được các trang này, và vẫn lập được phiếu xuất (/phieuxuat/them)
+                // vì quy tắc "anyRequest().authenticated()" ở cuối cho phép mọi tài khoản đã đăng nhập.
+                .requestMatchers(HttpMethod.POST,
+                        "/phieunhap/**",
+                        "/nha-cung-cap/**",
+                        "/san-pham/**",
+                        "/lo-hang/**")
+                .hasRole("ADMIN")
 
                 // Những URL còn lại
                 // phải đăng nhập

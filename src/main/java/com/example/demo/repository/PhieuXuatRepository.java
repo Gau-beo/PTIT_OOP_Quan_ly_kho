@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PhieuXuatRepository extends JpaRepository<PhieuXuat, Long> {
+
+    // Dùng để chặn xóa tài khoản đã từng lập phiếu xuất (khóa ngoại nguoiTaoId)
+    boolean existsByNguoiTao_Id(Long nguoiTaoId);
 }

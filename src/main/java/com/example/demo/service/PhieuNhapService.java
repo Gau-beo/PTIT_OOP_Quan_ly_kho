@@ -12,10 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.demo.dto.ChiTietPhieuNhapRequest;
 import com.example.demo.entity.ChiTietPhieuNhap;
 import com.example.demo.entity.LoHang;
+import com.example.demo.entity.NhaCungCap;
 import com.example.demo.entity.PhieuNhap;
 import com.example.demo.entity.Product;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.LoHangRepository;
+import com.example.demo.repository.NhaCungCapRepository;
 import com.example.demo.repository.PhieuNhapRepository;
 import com.example.demo.repository.ProductRepository;
 
@@ -25,13 +27,16 @@ public class PhieuNhapService {
     private final PhieuNhapRepository phieuNhapRepository;
     private final LoHangRepository loHangRepository;
     private final ProductRepository productRepository;
+    private final NhaCungCapRepository nhaCungCapRepository;
 
     public PhieuNhapService(PhieuNhapRepository phieuNhapRepository,
                             LoHangRepository loHangRepository,
-                            ProductRepository productRepository) {
+                            ProductRepository productRepository,
+                            NhaCungCapRepository nhaCungCapRepository) {
         this.phieuNhapRepository = phieuNhapRepository;
         this.loHangRepository = loHangRepository;
         this.productRepository = productRepository;
+        this.nhaCungCapRepository = nhaCungCapRepository;
     }
 
     @Transactional(readOnly = true)
@@ -42,9 +47,17 @@ public class PhieuNhapService {
     /**
      * Tạo phiếu nhập: lưu phiếu + chi tiết, đồng thời sinh một lô hàng mới cho mỗi dòng
      * (số lượng tồn kho của sản phẩm chính là tổng số lượng các lô).
+     *
+     * SỬA: nhà cung cấp giờ bắt buộc phải là một NCC có thật trong bảng nha_cung_cap (truyền vào bằng id).
      */
     @Transactional
-    public PhieuNhap taoPhieuNhap(String nhaCungCap, List<ChiTietPhieuNhapRequest> dong) {
+    public PhieuNhap taoPhieuNhap(Integer nhaCungCapId, List<ChiTietPhieuNhapRequest> dong) {
+        if (nhaCungCapId == null) {
+            throw new IllegalArgumentException("Vui lòng chọn nhà cung cấp!");
+        }
+        NhaCungCap ncc = nhaCungCapRepository.findById(nhaCungCapId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy nhà cung cấp ID: " + nhaCungCapId));
+
         if (dong == null || dong.isEmpty()) {
             throw new IllegalArgumentException("Phiếu nhập phải có ít nhất một dòng sản phẩm!");
         }
@@ -52,7 +65,7 @@ public class PhieuNhapService {
         LocalDate homNay = LocalDate.now();
         PhieuNhap phieuNhap = new PhieuNhap();
         phieuNhap.setNgayNhap(new Date());
-        phieuNhap.setNhaCungCap(nhaCungCap == null || nhaCungCap.isBlank() ? "Không rõ" : nhaCungCap.trim());
+        phieuNhap.setNhaCungCap(ncc);
         phieuNhap.setChiTietPhieuNhaps(new ArrayList<>());
 
         double tongTien = 0;
@@ -83,11 +96,13 @@ public class PhieuNhapService {
 
         PhieuNhap daLuu = phieuNhapRepository.save(phieuNhap);
 
+        // LoHang vẫn lưu tên NCC dạng chuỗi (ảnh chụp tại thời điểm nhập),
+        // nên ô tìm kiếm theo NCC ở trang Tra cứu lô hàng vẫn hoạt động như cũ.
         int stt = 1;
         for (ChiTietPhieuNhap ct : daLuu.getChiTietPhieuNhaps()) {
             String maLo = "LH-PN" + daLuu.getId() + "-" + stt++;
             loHangRepository.save(new LoHang(maLo, homNay, ct.getHanSuDung(), ct.getSoLuong(),
-                    daLuu.getNhaCungCap(), ct.getSanPham()));
+                    ncc.getTenNCC(), ct.getSanPham()));
         }
         return daLuu;
     }

@@ -24,6 +24,9 @@ public class NhaCungCap {
     @Column(name = "sdt", length = 20)
     private String sdt;
 
+    @Column(name = "email", length = 255)
+    private String email;
+
     public NhaCungCap() {
     }
 
@@ -57,5 +60,13 @@ public class NhaCungCap {
 
     public void setSdt(String sdt) {
         this.sdt = sdt;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

@@ -19,7 +19,7 @@
         <div class="card-body p-0">
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
-                    <tr><th>ID</th><th>Họ tên</th><th>Email</th><th>Vai trò</th><th>Loại tài khoản</th></tr>
+                    <tr><th>ID</th><th>Họ tên</th><th>Email</th><th>Vai trò</th><th>Loại tài khoản</th><th class="text-end">Thao tác</th></tr>
                 </thead>
                 <tbody>
                     <tr th:each="nd : ${danhSachTaiKhoan}">
@@ -30,6 +30,14 @@
                             <span th:class="${nd.vaiTro == 'ADMIN'} ? 'badge bg-danger' : 'badge bg-primary'" th:text="${nd.vaiTro}"></span>
                         </td>
                         <td th:text="${nd.moTaTaiKhoan}"></td>
+                        <td class="text-end">
+                            <form th:if="${nd.vaiTro != 'ADMIN'}" th:action="@{/admin/xoa/{id}(id=${nd.id})}" method="post"
+                                  class="d-inline" onsubmit="return confirm('Xóa tài khoản này?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i> Xóa
+                                </button>
+                            </form>
+                        </td>
                     </tr>
                 </tbody>
             </table>

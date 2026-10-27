@@ -12,7 +12,7 @@
             <h3 class="fw-bold mb-1"><i class="bi bi-box-arrow-in-right text-success me-2"></i>Quản Lý Phiếu Nhập</h3>
             <p class="text-muted mb-0">Mỗi dòng của phiếu nhập sẽ tự động sinh một lô hàng mới trong kho</p>
         </div>
-        <button type="button" class="btn btn-success shadow-sm" data-bs-toggle="modal" data-bs-target="#modalPhieuNhap">
+        <button type="button" sec:authorize="hasRole('ADMIN')" class="btn btn-success shadow-sm" data-bs-toggle="modal" data-bs-target="#modalPhieuNhap">
             <i class="bi bi-plus-circle me-1"></i> Tạo phiếu nhập
         </button>
     </div>
@@ -38,7 +38,7 @@
                         <tr th:each="pn : ${danhSachPhieuNhap}">
                             <td class="fw-bold text-success" th:text="'PN-' + ${pn.id}"></td>
                             <td th:text="${#dates.format(pn.ngayNhap, 'dd/MM/yyyy HH:mm')}"></td>
-                            <td th:text="${pn.nhaCungCap}"></td>
+                            <td th:text="${pn.nhaCungCap != null ? pn.nhaCungCap.tenNCC : '(chưa ghi nhận)'}"></td>
                             <td>
                                 <div th:each="ct : ${pn.chiTietPhieuNhaps}" class="small">
                                     <span class="fw-semibold" th:text="${ct.sanPham.tenSanPham}"></span>
@@ -74,10 +74,13 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Nhà cung cấp <span class="text-danger">*</span></label>
-                        <input type="text" name="nhaCungCap" list="dsNcc" class="form-control" placeholder="Chọn hoặc nhập tên nhà cung cấp" required>
-                        <datalist id="dsNcc">
-                            <option th:each="n : ${danhSachNCC}" th:value="${n.tenNCC}"></option>
-                        </datalist>
+                        <select name="nhaCungCapId" class="form-select" required>
+                            <option value="" disabled selected>-- Chọn nhà cung cấp --</option>
+                            <option th:each="n : ${danhSachNCC}" th:value="${n.id}" th:text="${n.tenNCC}"></option>
+                        </select>
+                        <div class="form-text" th:if="${#lists.isEmpty(danhSachNCC)}">
+                            Chưa có nhà cung cấp nào. Hãy thêm ở trang <a th:href="@{/nha-cung-cap}">Nhà cung cấp</a> trước.
+                        </div>
                     </div>
                     <table class="table table-sm align-middle">
                         <thead class="table-light">

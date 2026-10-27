@@ -18,10 +18,12 @@ public class PhieuNhap {
     @Column(name = "tong_tien")
     private Double tongTien;
 
-    @Column(name = "nha_cung_cap")
-    private String nhaCungCap;
+    // SỬA: trước đây là String (gõ tự do). Giờ là khóa ngoại tới bảng nha_cung_cap.
+    // Phiếu cũ (tạo trước khi sửa) sẽ có giá trị null ở cột này -> template phải xử lý null.
+    @ManyToOne
+    @JoinColumn(name = "nha_cung_cap_id")
+    private NhaCungCap nhaCungCap;
 
-    // Đoạn code liên kết đã được đưa vào đúng bên TRONG class
     @OneToMany(mappedBy = "phieuNhap", cascade = CascadeType.ALL)
     private List<ChiTietPhieuNhap> chiTietPhieuNhaps;
 
@@ -36,14 +38,9 @@ public class PhieuNhap {
     public Double getTongTien() { return tongTien; }
     public void setTongTien(Double tongTien) { this.tongTien = tongTien; }
 
-    public String getNhaCungCap() { return nhaCungCap; }
-    public void setNhaCungCap(String nhaCungCap) { this.nhaCungCap = nhaCungCap; }
+    public NhaCungCap getNhaCungCap() { return nhaCungCap; }
+    public void setNhaCungCap(NhaCungCap nhaCungCap) { this.nhaCungCap = nhaCungCap; }
 
-    public List<ChiTietPhieuNhap> getChiTietPhieuNhaps() {
-        return chiTietPhieuNhaps;
-    }
-
-    public void setChiTietPhieuNhaps(List<ChiTietPhieuNhap> chiTietPhieuNhaps) {
-        this.chiTietPhieuNhaps = chiTietPhieuNhaps;
-    }
+    public List<ChiTietPhieuNhap> getChiTietPhieuNhaps() { return chiTietPhieuNhaps; }
+    public void setChiTietPhieuNhaps(List<ChiTietPhieuNhap> chiTietPhieuNhaps) { this.chiTietPhieuNhaps = chiTietPhieuNhaps; }
 }

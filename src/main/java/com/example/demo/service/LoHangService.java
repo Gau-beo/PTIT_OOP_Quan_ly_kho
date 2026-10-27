@@ -57,6 +57,28 @@ public class LoHangService {
     }
 
     public LoHang themLoHang(LoHang loHang) {
+        // SỬA: trước đây lưu thẳng, không kiểm tra gì -> có thể nhập số lượng âm,
+        // hoặc trùng mã lô làm DB ném lỗi kỹ thuật (unique constraint) ra màn hình.
+        String ma = loHang.getMaLoHang() == null ? "" : loHang.getMaLoHang().trim();
+        if (ma.isEmpty()) {
+            throw new IllegalArgumentException("Mã lô hàng không được để trống!");
+        }
+        if (loHangRepository.existsByMaLoHang(ma)) {
+            throw new IllegalArgumentException("Mã lô hàng '" + ma + "' đã tồn tại!");
+        }
+        if (loHang.getProduct() == null) {
+            throw new IllegalArgumentException("Vui lòng chọn sản phẩm cho lô hàng!");
+        }
+        if (loHang.getSoLuong() <= 0) {
+            throw new IllegalArgumentException("Số lượng lô hàng phải lớn hơn 0!");
+        }
+        if (loHang.getNgayNhap() == null) {
+            throw new IllegalArgumentException("Ngày nhập không được để trống!");
+        }
+        if (loHang.getHanSuDung() != null && loHang.getHanSuDung().isBefore(loHang.getNgayNhap())) {
+            throw new IllegalArgumentException("Hạn sử dụng không được trước ngày nhập!");
+        }
+        loHang.setMaLoHang(ma);
         return loHangRepository.save(loHang);
     }
 
