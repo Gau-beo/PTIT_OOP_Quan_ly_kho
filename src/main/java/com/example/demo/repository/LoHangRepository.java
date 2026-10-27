@@ -10,15 +10,16 @@ import org.springframework.data.repository.query.Param;
 import com.example.demo.entity.LoHang;
 
 public interface LoHangRepository extends JpaRepository<LoHang, Long> {
-    List<LoHang> findByMaLoHangContaining(String maLoHang);
 
     boolean existsByMaLoHang(String maLoHang);
 
-    List<LoHang> findByMaLoHangContainingIgnoreCaseOrProduct_TenSanPhamContainingIgnoreCase(String maLoHang, String tenSanPham);
+    // Dùng để chặn xóa sản phẩm đã có lô hàng
+    boolean existsByProduct_Id(Long productId);
 
-    List<LoHang> findByHanSuDungBefore(LocalDate now);
+    // Cảnh báo chỉ tính các lô CÒN HÀNG (soLuong > 0)
+    List<LoHang> findByHanSuDungBeforeAndSoLuongGreaterThan(LocalDate ngay, int soLuong);
 
-    List<LoHang> findByHanSuDungBetween(LocalDate from, LocalDate to);
+    List<LoHang> findByHanSuDungBetweenAndSoLuongGreaterThan(LocalDate tu, LocalDate den, int soLuong);
 
     @Query("SELECT lh FROM LoHang lh WHERE " +
            "(:keyword IS NULL OR :keyword = '' OR LOWER(lh.maLoHang) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(lh.product.tenSanPham) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(COALESCE(lh.nhaCungCap, '')) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +

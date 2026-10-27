@@ -1,6 +1,0 @@
-$kind: http-request
-url: http://localhost:8080/api/lo-hang/tra-cuu?ma=LH-VNM
-method: GET
-queryParams:
-  ma: LH-VNM
-order: 2000

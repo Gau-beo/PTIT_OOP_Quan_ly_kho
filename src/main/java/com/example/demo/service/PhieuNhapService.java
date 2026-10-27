@@ -100,10 +100,20 @@ public class PhieuNhapService {
         // nên ô tìm kiếm theo NCC ở trang Tra cứu lô hàng vẫn hoạt động như cũ.
         int stt = 1;
         for (ChiTietPhieuNhap ct : daLuu.getChiTietPhieuNhaps()) {
-            String maLo = "LH-PN" + daLuu.getId() + "-" + stt++;
+            String maLo = taoMaLoDuyNhat("LH-PN" + daLuu.getId() + "-" + stt++);
             loHangRepository.save(new LoHang(maLo, homNay, ct.getHanSuDung(), ct.getSoLuong(),
                     ncc.getTenNCC(), ct.getSanPham()));
         }
         return daLuu;
+    }
+
+    /** Nếu mã lô tự sinh trùng với một lô đã nhập tay thì thêm hậu tố -2, -3... cho đến khi duy nhất. */
+    private String taoMaLoDuyNhat(String maGoc) {
+        String ma = maGoc;
+        int hauTo = 2;
+        while (loHangRepository.existsByMaLoHang(ma)) {
+            ma = maGoc + "-" + hauTo++;
+        }
+        return ma;
     }
 }

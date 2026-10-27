@@ -1,6 +1,5 @@
 package com.example.demo.factory;
 
-import java.time.LocalDate;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
@@ -30,7 +29,7 @@ public class SanPhamFactory {
      */
     public void capNhatThuocTinhRieng(Product product, Map<String, String> p) {
         if (product instanceof SanPhamThucPham tp) {
-            tp.setNgayHetHan(docNgay(p.get("ngayHetHan")));
+            tp.setThoiHanSuDungThang(docSoNguyen(p.get("thoiHanSuDungThang")));
         } else if (product instanceof SanPhamDeVo dv) {
             dv.setMucDoDeVo(docChuoi(p.get("mucDoDeVo")));
             dv.setYeuCauDongGoiDacBiet(p.get("yeuCauDongGoiDacBiet") != null);
@@ -46,10 +45,6 @@ public class SanPhamFactory {
 
     private static String docChuoi(String s) {
         return (s == null || s.isBlank()) ? null : s.trim();
-    }
-
-    private static LocalDate docNgay(String s) {
-        return (s == null || s.isBlank()) ? null : LocalDate.parse(s.trim());
     }
 
     private static Integer docSoNguyen(String s) {

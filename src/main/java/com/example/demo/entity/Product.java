@@ -3,8 +3,6 @@ package com.example.demo.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
@@ -15,7 +13,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
-import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -42,7 +39,6 @@ public abstract class Product {
     private String ghiChu;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("product")
     private List<LoHang> loHangs = new ArrayList<>();
 
     public Product() {

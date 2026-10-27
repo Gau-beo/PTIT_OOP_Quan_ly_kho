@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/navbar :: header('Tra cứu lô hàng')}"></head>
 <body>
     <!-- Navbar -->
@@ -17,7 +18,7 @@
             </div>
             <div>
                 <button type="button" sec:authorize="hasRole('ADMIN')" class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#modalThemLoHang">
-                    <i class="bi bi-plus-circle me-1"></i> Nhập lô hàng mới
+                    <i class="bi bi-plus-circle me-1"></i> Khai báo tồn đầu kỳ
                 </button>
             </div>
         </div>
@@ -41,6 +42,7 @@
                             <option value="con_han" th:selected="${trangThai == 'con_han'}">🟢 Còn hạn sử dụng</option>
                             <option value="sap_het_han" th:selected="${trangThai == 'sap_het_han'}">🟡 Sắp hết hạn (&lt; 30 ngày)</option>
                             <option value="het_han" th:selected="${trangThai == 'het_han'}">🔴 Đã hết hạn</option>
+                            <option value="het_hang" th:selected="${trangThai == 'het_hang'}">⚪ Đã hết hàng (SL = 0)</option>
                         </select>
                     </div>
                     <div class="col-12 col-md-3 d-flex gap-2">
@@ -74,6 +76,7 @@
                                 <th>Số Lượng</th>
                                 <th>Nhà Cung Cấp</th>
                                 <th>Tình Trạng HSD</th>
+                                <th class="text-end" sec:authorize="hasRole('ADMIN')">Thao Tác</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -97,6 +100,7 @@
                                 <td>
                                     <span class="fw-bold" th:text="${lh.soLuong}"></span>
                                     <span class="text-muted small" th:text="${lh.product != null ? lh.product.donViTinh : ''}"></span>
+                                    <span th:if="${lh.soLuong == 0}" class="badge bg-secondary ms-1">Hết hàng</span>
                                 </td>
                                 <td th:text="${lh.nhaCungCap != null and !lh.nhaCungCap.isEmpty() ? lh.nhaCungCap : '-'}"></td>
                                 <td>
@@ -113,9 +117,18 @@
                                         Không áp dụng
                                     </span>
                                 </td>
+                                <td class="text-end text-nowrap" sec:authorize="hasRole('ADMIN')">
+                                    <form th:if="${lh.isHetHan() and lh.soLuong > 0}"
+                                          th:action="@{/lo-hang/{id}/tieu-huy(id=${lh.id})}" method="post" class="d-inline"
+                                          onsubmit="return confirm('Tiêu hủy toàn bộ số lượng còn lại của lô hết hạn này? Thao tác không thể hoàn tác.');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-trash3 me-1"></i>Tiêu hủy
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
                             <tr th:if="${danhSachLoHang.empty}">
-                                <td colspan="8" class="text-center py-5 text-muted">
+                                <td colspan="9" class="text-center py-5 text-muted">
                                     <i class="bi bi-search fs-1 d-block mb-2 text-secondary"></i>
                                     Không tìm thấy lô hàng nào phù hợp với điều kiện tra cứu!
                                 </td>
@@ -134,11 +147,16 @@
                 <form th:action="@{/lo-hang/them}" method="post">
                     <div class="modal-header bg-primary text-white">
                         <h5 class="modal-title fw-bold" id="modalThemLoHangLabel">
-                            <i class="bi bi-box-arrow-in-down me-2"></i>Nhập Lô Hàng Mới
+                            <i class="bi bi-box-arrow-in-down me-2"></i>Khai Báo Tồn Đầu Kỳ
                         </h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
+                        <div class="alert alert-info small py-2">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Dùng cho hàng <strong>có sẵn trong kho</strong> (tồn đầu kỳ). Hàng nhập mới từ nhà cung cấp
+                            hãy lập <a th:href="@{/phieunhap}">Phiếu nhập</a> để có chứng từ.
+                        </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Sản phẩm <span class="text-danger">*</span></label>
                             <select name="productId" class="form-select" required>
@@ -170,7 +188,10 @@
                             </div>
                             <div class="col-6">
                                 <label class="form-label fw-semibold">Nhà cung cấp</label>
-                                <input type="text" name="nhaCungCap" class="form-control" placeholder="Tên nhà cung cấp">
+                                <select name="nhaCungCap" class="form-select">
+                                    <option value="">-- Không xác định --</option>
+                                    <option th:each="n : ${danhSachNCC}" th:value="${n.tenNCC}" th:text="${n.tenNCC}"></option>
+                                </select>
                             </div>
                         </div>
                     </div>

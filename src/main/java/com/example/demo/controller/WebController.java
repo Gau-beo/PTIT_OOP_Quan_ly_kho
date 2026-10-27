@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -15,9 +16,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.entity.LoHang;
 import com.example.demo.entity.LoaiSanPham;
-import com.example.demo.factory.SanPhamFactory;
 import com.example.demo.entity.Product;
+import com.example.demo.factory.SanPhamFactory;
 import com.example.demo.service.LoHangService;
+import com.example.demo.service.NhaCungCapService;
 import com.example.demo.service.ProductService;
 
 @Controller
@@ -25,32 +27,34 @@ public class WebController {
 
     private final ProductService productService;
     private final LoHangService loHangService;
+    private final NhaCungCapService nhaCungCapService;
     private final SanPhamFactory sanPhamFactory;
 
-    public WebController(ProductService productService, LoHangService loHangService, SanPhamFactory sanPhamFactory) {
+    public WebController(ProductService productService,
+                         LoHangService loHangService,
+                         NhaCungCapService nhaCungCapService,
+                         SanPhamFactory sanPhamFactory) {
         this.productService = productService;
         this.loHangService = loHangService;
+        this.nhaCungCapService = nhaCungCapService;
         this.sanPhamFactory = sanPhamFactory;
     }
 
     // 1. TRANG BÁO CÁO & THỐNG KÊ (Trang chủ)
     @GetMapping({"/", "/thong-ke"})
     public String trangThongKe(Model model) {
-        long tongSoSanPham = productService.layTongSoSanPham();
-        long tongSoLoHang = loHangService.layTongSoLoHang();
-        long tongTonKho = productService.layTongTonKho();
         List<LoHang> loHangSapHetHan = loHangService.layLoHangSapHetHan();
         List<LoHang> loHangHetHan = loHangService.layLoHangHetHan();
-        List<Product> danhSachSanPham = productService.layTatCaSanPham();
 
-        model.addAttribute("tongSoSanPham", tongSoSanPham);
-        model.addAttribute("tongSoLoHang", tongSoLoHang);
-        model.addAttribute("tongTonKho", tongTonKho);
+        model.addAttribute("tongSoSanPham", productService.layTongSoSanPham());
+        model.addAttribute("tongSoLoHang", loHangService.layTongSoLoHang());
+        model.addAttribute("tongTonKho", productService.layTongTonKho());
+        model.addAttribute("tongTonKhaDung", productService.layTongTonKhoKhaDung());
         model.addAttribute("soLuongSapHetHan", loHangSapHetHan.size());
         model.addAttribute("soLuongHetHan", loHangHetHan.size());
         model.addAttribute("loHangSapHetHan", loHangSapHetHan);
         model.addAttribute("loHangHetHan", loHangHetHan);
-        model.addAttribute("danhSachSanPham", danhSachSanPham);
+        model.addAttribute("danhSachSanPham", productService.layTatCaSanPham());
         model.addAttribute("activePage", "thong-ke");
 
         return "thong-ke";
@@ -63,11 +67,9 @@ public class WebController {
             @RequestParam(required = false, defaultValue = "tat_ca") String trangThai,
             Model model) {
 
-        List<LoHang> danhSachLoHang = loHangService.traCuuNangCao(keyword, trangThai);
-        List<Product> danhSachSanPham = productService.layTatCaSanPham();
-
-        model.addAttribute("danhSachLoHang", danhSachLoHang);
-        model.addAttribute("danhSachSanPham", danhSachSanPham);
+        model.addAttribute("danhSachLoHang", loHangService.traCuuNangCao(keyword, trangThai));
+        model.addAttribute("danhSachSanPham", productService.layTatCaSanPham());
+        model.addAttribute("danhSachNCC", nhaCungCapService.layTatCa());
         model.addAttribute("keyword", keyword);
         model.addAttribute("trangThai", trangThai);
         model.addAttribute("activePage", "lo-hang");
@@ -75,7 +77,7 @@ public class WebController {
         return "lo-hang";
     }
 
-    // Thêm lô hàng mới từ giao diện Web
+    // Khai báo lô hàng (tồn đầu kỳ) từ giao diện Web
     @PostMapping("/lo-hang/them")
     public String themLoHang(
             @RequestParam String maLoHang,
@@ -88,9 +90,10 @@ public class WebController {
 
         try {
             Product product = productService.laySanPhamTheoId(productId);
-            LoHang loHang = new LoHang(maLoHang, ngayNhap, hanSuDung, soLuong, nhaCungCap, product);
+            String ncc = (nhaCungCap == null || nhaCungCap.isBlank()) ? null : nhaCungCap.trim();
+            LoHang loHang = new LoHang(maLoHang, ngayNhap, hanSuDung, soLuong, ncc, product);
             loHangService.themLoHang(loHang);
-            redirectAttributes.addFlashAttribute("thongBaoThanhCong", "Thêm lô hàng [" + maLoHang + "] thành công!");
+            redirectAttributes.addFlashAttribute("thongBaoThanhCong", "Thêm lô hàng [" + maLoHang.trim() + "] thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("thongBaoLoi", "Lỗi khi thêm lô hàng: " + e.getMessage());
         }
@@ -98,34 +101,29 @@ public class WebController {
         return "redirect:/lo-hang";
     }
 
-    // 3. TRANG GHI CHÚ SẢN PHẨM & QUẢN LÝ SẢN PHẨM
+    // Tiêu hủy lô đã hết hạn (đưa số lượng về 0, vẫn giữ lô để truy vết)
+    @PostMapping("/lo-hang/{id}/tieu-huy")
+    public String tieuHuyLoHang(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            int soLuong = loHangService.tieuHuyLoHang(id);
+            redirectAttributes.addFlashAttribute("thongBaoThanhCong",
+                    "Đã tiêu hủy " + soLuong + " đơn vị còn lại của lô hết hạn.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("thongBaoLoi", "Không thể tiêu hủy lô: " + e.getMessage());
+        }
+        return "redirect:/lo-hang";
+    }
+
+    // 3. TRANG QUẢN LÝ SẢN PHẨM
     @GetMapping("/san-pham")
     public String trangSanPham(Model model) {
-        List<Product> danhSachSanPham = productService.layTatCaSanPham();
-        model.addAttribute("danhSachSanPham", danhSachSanPham);
+        model.addAttribute("danhSachSanPham", productService.layTatCaSanPham());
         model.addAttribute("loaiSanPhams", LoaiSanPham.values());
         model.addAttribute("activePage", "san-pham");
         return "san-pham";
     }
 
-    // Cập nhật ghi chú sản phẩm từ giao diện Web
-    @PostMapping("/san-pham/{id}/ghi-chu")
-    public String capNhatGhiChuWeb(
-            @PathVariable Long id,
-            @RequestParam(required = false, defaultValue = "") String ghiChu,
-            RedirectAttributes redirectAttributes) {
-
-        try {
-            Product product = productService.capNhatGhiChuText(id, ghiChu);
-            redirectAttributes.addFlashAttribute("thongBaoThanhCong", "Đã cập nhật ghi chú cho sản phẩm: " + product.getTenSanPham());
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("thongBaoLoi", "Lỗi khi cập nhật ghi chú: " + e.getMessage());
-        }
-
-        return "redirect:/san-pham";
-    }
-
-    // Thêm sản phẩm mới từ giao diện Web (Factory Pattern tạo đúng lớp con theo loại)
+    // Thêm sản phẩm mới (Factory Pattern tạo đúng lớp con theo loại)
     @PostMapping("/san-pham/them")
     public String themSanPham(
             @RequestParam String maSanPham,
@@ -139,18 +137,67 @@ public class WebController {
 
         try {
             String ma = maSanPham.trim();
+            String ten = tenSanPham.trim();
+            if (ma.isEmpty()) {
+                throw new IllegalArgumentException("Mã sản phẩm không được để trống!");
+            }
+            if (ten.isEmpty()) {
+                throw new IllegalArgumentException("Tên sản phẩm không được để trống!");
+            }
+            if (donGia == null || donGia < 0) {
+                throw new IllegalArgumentException("Đơn giá không được âm!");
+            }
             if (productService.tonTaiMaSanPham(ma)) {
                 throw new IllegalArgumentException("Mã sản phẩm [" + ma + "] đã tồn tại!");
             }
-            Product product = sanPhamFactory.taoSanPham(loai, ma, tenSanPham.trim(), donViTinh, donGia, ghiChu);
+            String dvt = (donViTinh == null || donViTinh.isBlank()) ? "Cái" : donViTinh.trim();
+            Product product = sanPhamFactory.taoSanPham(loai, ma, ten, dvt, donGia, ghiChu == null ? "" : ghiChu.trim());
             sanPhamFactory.capNhatThuocTinhRieng(product, thuocTinhRieng);
             productService.luuSanPham(product);
             redirectAttributes.addFlashAttribute("thongBaoThanhCong",
-                    "Thêm sản phẩm [" + tenSanPham + "] (" + loai.getTenHienThi() + ") thành công!");
+                    "Thêm sản phẩm [" + ten + "] (" + loai.getTenHienThi() + ") thành công!");
+        } catch (NumberFormatException | DateTimeParseException e) {
+            redirectAttributes.addFlashAttribute("thongBaoLoi", "Lỗi khi thêm sản phẩm: giá trị số không hợp lệ.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("thongBaoLoi", "Lỗi khi thêm sản phẩm: " + e.getMessage());
         }
 
+        return "redirect:/san-pham";
+    }
+
+    // Sửa sản phẩm (mã SP và loại SP giữ nguyên)
+    @PostMapping("/san-pham/{id}/sua")
+    public String suaSanPham(
+            @PathVariable Long id,
+            @RequestParam String tenSanPham,
+            @RequestParam(required = false) String donViTinh,
+            @RequestParam(required = false, defaultValue = "0") Double donGia,
+            @RequestParam(required = false) String ghiChu,
+            @RequestParam Map<String, String> thuocTinhRieng,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            Product product = productService.capNhatSanPham(id, tenSanPham, donViTinh, donGia, ghiChu, thuocTinhRieng);
+            redirectAttributes.addFlashAttribute("thongBaoThanhCong",
+                    "Đã cập nhật sản phẩm: " + product.getTenSanPham());
+        } catch (NumberFormatException | DateTimeParseException e) {
+            redirectAttributes.addFlashAttribute("thongBaoLoi", "Lỗi khi cập nhật sản phẩm: giá trị số không hợp lệ.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("thongBaoLoi", "Lỗi khi cập nhật sản phẩm: " + e.getMessage());
+        }
+
+        return "redirect:/san-pham";
+    }
+
+    // Xóa sản phẩm - chỉ khi chưa phát sinh lô hàng / phiếu nhập / phiếu xuất
+    @PostMapping("/san-pham/{id}/xoa")
+    public String xoaSanPham(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            productService.xoaSanPham(id);
+            redirectAttributes.addFlashAttribute("thongBaoThanhCong", "Đã xóa sản phẩm ID " + id);
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("thongBaoLoi", e.getMessage());
+        }
         return "redirect:/san-pham";
     }
 }

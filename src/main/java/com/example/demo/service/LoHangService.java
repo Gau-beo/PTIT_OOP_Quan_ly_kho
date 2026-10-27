@@ -15,31 +15,25 @@ import com.example.demo.repository.LoHangRepository;
 @Transactional
 public class LoHangService {
 
+    /** Số ngày trước hạn được coi là "sắp hết hạn" (khớp với LoHang.isSapHetHan()). */
+    private static final int SO_NGAY_SAP_HET_HAN = 30;
+
     private final LoHangRepository loHangRepository;
 
     public LoHangService(LoHangRepository loHangRepository) {
         this.loHangRepository = loHangRepository;
     }
 
-    public List<LoHang> layTatCaLoHang() {
-        return loHangRepository.findAll();
-    }
-
+    @Transactional(readOnly = true)
     public LoHang layLoHangTheoId(Long id) {
         return loHangRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy lô hàng có ID: " + id));
     }
 
-    public List<LoHang> traCuuLoHang(String ma) {
-        if (ma == null || ma.isBlank()) {
-            return loHangRepository.findAll();
-        }
-        return loHangRepository.findByMaLoHangContaining(ma.trim());
-    }
-
+    @Transactional(readOnly = true)
     public List<LoHang> traCuuNangCao(String keyword, String trangThai) {
         List<LoHang> danhSach = loHangRepository.traCuu(keyword != null ? keyword.trim() : "");
-        
+
         if (trangThai == null || trangThai.isBlank() || "tat_ca".equalsIgnoreCase(trangThai)) {
             return danhSach;
         }
@@ -51,14 +45,18 @@ public class LoHangService {
                 return lh.isSapHetHan();
             } else if ("het_han".equalsIgnoreCase(trangThai)) {
                 return lh.isHetHan();
+            } else if ("het_hang".equalsIgnoreCase(trangThai)) {
+                return lh.getSoLuong() == 0;
             }
             return true;
         }).collect(Collectors.toList());
     }
 
+    /**
+     * Khai báo một lô hàng trực tiếp (dùng cho tồn đầu kỳ / hàng có sẵn trong kho).
+     * Hàng nhập thông thường nên đi qua Phiếu nhập để có chứng từ.
+     */
     public LoHang themLoHang(LoHang loHang) {
-        // SỬA: trước đây lưu thẳng, không kiểm tra gì -> có thể nhập số lượng âm,
-        // hoặc trùng mã lô làm DB ném lỗi kỹ thuật (unique constraint) ra màn hình.
         String ma = loHang.getMaLoHang() == null ? "" : loHang.getMaLoHang().trim();
         if (ma.isEmpty()) {
             throw new IllegalArgumentException("Mã lô hàng không được để trống!");
@@ -82,17 +80,40 @@ public class LoHangService {
         return loHangRepository.save(loHang);
     }
 
+    /**
+     * Tiêu hủy lô đã hết hạn: đưa số lượng còn lại về 0 (lô vẫn được giữ lại để truy vết).
+     * @return số lượng đã tiêu hủy
+     */
+    public int tieuHuyLoHang(Long id) {
+        LoHang lo = layLoHangTheoId(id);
+        if (!lo.isHetHan()) {
+            throw new IllegalArgumentException("Chỉ được tiêu hủy lô đã hết hạn sử dụng!");
+        }
+        int conLai = lo.getSoLuong();
+        if (conLai <= 0) {
+            throw new IllegalArgumentException("Lô '" + lo.getMaLoHang() + "' đã hết hàng, không còn gì để tiêu hủy!");
+        }
+        lo.setSoLuong(0);
+        loHangRepository.save(lo);
+        return conLai;
+    }
+
+    @Transactional(readOnly = true)
     public long layTongSoLoHang() {
         return loHangRepository.count();
     }
 
+    /** Các lô đã hết hạn mà vẫn còn hàng trong kho. */
+    @Transactional(readOnly = true)
     public List<LoHang> layLoHangHetHan() {
-        return loHangRepository.findByHanSuDungBefore(LocalDate.now());
+        return loHangRepository.findByHanSuDungBeforeAndSoLuongGreaterThan(LocalDate.now(), 0);
     }
 
+    /** Các lô sắp hết hạn (trong vòng 30 ngày tới) và còn hàng. */
+    @Transactional(readOnly = true)
     public List<LoHang> layLoHangSapHetHan() {
-        LocalDate now = LocalDate.now();
-        LocalDate in30Days = now.plusDays(30);
-        return loHangRepository.findByHanSuDungBetween(now, in30Days);
+        LocalDate homNay = LocalDate.now();
+        return loHangRepository.findByHanSuDungBetweenAndSoLuongGreaterThan(
+                homNay, homNay.plusDays(SO_NGAY_SAP_HET_HAN - 1), 0);
     }
 }

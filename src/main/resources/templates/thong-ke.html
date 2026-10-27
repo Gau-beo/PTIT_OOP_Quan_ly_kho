@@ -66,7 +66,7 @@
                         <div>
                             <span class="text-muted small text-uppercase fw-semibold">Tổng Hàng Tồn</span>
                             <h2 class="fw-bold mb-0 text-info mt-1" th:text="${#numbers.formatInteger(tongTonKho, 0, 'POINT')}">0</h2>
-                            <small class="text-muted">đơn vị hàng hóa</small>
+                            <small class="text-muted" th:text="'trong đó khả dụng: ' + ${#numbers.formatInteger(tongTonKhaDung, 0, 'POINT')}">khả dụng</small>
                         </div>
                         <div class="bg-info bg-opacity-10 text-info p-3 rounded-circle">
                             <i class="bi bi-stack fs-3"></i>
@@ -157,6 +157,7 @@
                                 <th>Đơn Giá (VNĐ)</th>
                                 <th>Số Lô Đang Lưu</th>
                                 <th>Tổng Tồn Kho</th>
+                                <th>Khả Dụng <span class="text-muted fw-normal text-lowercase" title="Không tính lô đã hết hạn">(chưa hết hạn)</span></th>
                                 <th>Ghi Chú Sản Phẩm</th>
                                 <th>Tình Trạng Kho</th>
                             </tr>
@@ -175,25 +176,28 @@
                                     <span class="fw-bold fs-6" th:text="${sp.tongTonKho}">0</span>
                                 </td>
                                 <td>
+                                    <span class="fw-bold fs-6 text-success" th:text="${sp.tonKhoKhaDung}">0</span>
+                                </td>
+                                <td>
                                     <span class="badge bg-light text-dark border text-wrap text-start font-monospace" 
                                           style="max-width: 250px; display: inline-block;"
                                           th:text="${sp.ghiChu != null and !sp.ghiChu.isEmpty() ? sp.ghiChu : '(Chưa có ghi chú)'}">
                                     </span>
                                 </td>
                                 <td>
-                                    <span th:if="${sp.tongTonKho > 100}" class="badge bg-success-subtle text-success border border-success-subtle">
+                                    <span th:if="${sp.tonKhoKhaDung > 100}" class="badge bg-success-subtle text-success border border-success-subtle">
                                         <i class="bi bi-check2 me-1"></i>Đủ hàng
                                     </span>
-                                    <span th:if="${sp.tongTonKho > 0 and sp.tongTonKho <= 100}" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">
+                                    <span th:if="${sp.tonKhoKhaDung > 0 and sp.tonKhoKhaDung <= 100}" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">
                                         <i class="bi bi-exclamation me-1"></i>Sắp hết hàng
                                     </span>
-                                    <span th:if="${sp.tongTonKho == 0}" class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                                    <span th:if="${sp.tonKhoKhaDung == 0}" class="badge bg-danger-subtle text-danger border border-danger-subtle">
                                         <i class="bi bi-x me-1"></i>Hết hàng
                                     </span>
                                 </td>
                             </tr>
                             <tr th:if="${danhSachSanPham.empty}">
-                                <td colspan="9" class="text-center py-4 text-muted">
+                                <td colspan="10" class="text-center py-4 text-muted">
                                     <i class="bi bi-inbox fs-2 d-block mb-2"></i>
                                     Chưa có dữ liệu sản phẩm nào trong kho.
                                 </td>

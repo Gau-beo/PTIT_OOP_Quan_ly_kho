@@ -12,10 +12,10 @@ Giao diện render phía server (Thymeleaf), **không dùng REST API**.
 ## Chức năng
 | Trang | Mô tả |
 |---|---|
-| `/thong-ke` | Báo cáo tồn kho, cảnh báo lô hết hạn / sắp hết hạn |
-| `/lo-hang` | Tra cứu, lọc lô hàng; nhập lô mới |
-| `/san-pham` | Danh sách sản phẩm, thêm sản phẩm **theo loại**, sửa ghi chú |
-| `/phieunhap` | Tạo phiếu nhập nhiều dòng - tự sinh lô hàng mới |
+| `/thong-ke` | Báo cáo tồn kho (tổng và khả dụng), cảnh báo lô hết hạn / sắp hết hạn (chỉ tính lô còn hàng) |
+| `/lo-hang` | Tra cứu, lọc lô hàng (kể cả lô đã hết hàng); khai báo tồn đầu kỳ; **tiêu hủy** lô đã hết hạn (ADMIN) |
+| `/san-pham` | Danh sách sản phẩm, thêm sản phẩm **theo loại**, **sửa** thông tin, **xóa** (chỉ khi chưa có lô hàng/phiếu nào) |
+| `/phieunhap` | Tạo phiếu nhập nhiều dòng - tự sinh lô hàng mới (mã lô luôn duy nhất) |
 | `/phieuxuat` | Tạo phiếu xuất nhiều dòng - tự trừ tồn theo **FEFO**, bỏ qua lô hết hạn |
 | `/nha-cung-cap` | Quản lý nhà cung cấp |
 | `/admin` | (chỉ ADMIN) danh sách tài khoản hệ thống |
@@ -28,3 +28,14 @@ Giao diện render phía server (Thymeleaf), **không dùng REST API**.
 - **Đa hình**: mỗi lớp con ghi đè `getThongTinRieng()` / `getMoTaTaiKhoan()`; giao diện chỉ gọi qua lớp cha.
 - **Factory Pattern**: `SanPhamFactory` tạo đúng lớp con theo `LoaiSanPham`.
 - **Phân tầng**: Controller -> Service -> Repository -> Entity.
+
+## Quy tắc nghiệp vụ chính
+- **Không xóa cứng dữ liệu đã phát sinh giao dịch** để giữ khả năng truy vết: lô hàng không có nút xóa (lô hết hạn được *tiêu hủy* - đưa số lượng về 0 và vẫn giữ lô); sản phẩm, nhà cung cấp, tài khoản chỉ xóa được khi chưa được tham chiếu ở đâu.
+- Tồn kho **khả dụng** = tổng các lô chưa hết hạn; phiếu xuất chỉ xuất từ phần khả dụng này.
+- Hạn sử dụng được quản lý theo **từng lô**; sản phẩm thực phẩm chỉ lưu thời hạn sử dụng tiêu chuẩn (tháng).
+- Hàng nhập mới nên đi qua **Phiếu nhập** (có chứng từ); "Khai báo tồn đầu kỳ" ở trang Lô hàng chỉ dành cho hàng có sẵn trong kho.
+
+## Hạn chế đã biết
+- Chưa có cơ chế khóa chống xuất trùng khi nhiều người thao tác đồng thời cùng một sản phẩm.
+- Chưa có unit test cho nghiệp vụ FEFO.
+- Phiếu xuất chưa ghi lại cụ thể đã trừ từ lô nào.

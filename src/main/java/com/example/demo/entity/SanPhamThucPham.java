@@ -3,14 +3,17 @@ package com.example.demo.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import java.time.LocalDate;
 
+/**
+ * Sản phẩm thực phẩm. Hạn dùng cụ thể được quản lý theo TỪNG LÔ (LoHang.hanSuDung),
+ * còn ở cấp sản phẩm chỉ lưu "thời hạn sử dụng tiêu chuẩn" (số tháng) để tham khảo.
+ */
 @Entity
 @DiscriminatorValue("THUC_PHAM")
 public class SanPhamThucPham extends Product {
 
-    @Column(name = "ngay_het_han")
-    private LocalDate ngayHetHan;
+    @Column(name = "thoi_han_su_dung_thang")
+    private Integer thoiHanSuDungThang;
 
     public SanPhamThucPham() {
     }
@@ -19,22 +22,18 @@ public class SanPhamThucPham extends Product {
         super(maSp, tenSanPham, donViTinh, donGia, ghiChu);
     }
 
-    public LocalDate getNgayHetHan() {
-        return ngayHetHan;
+    public Integer getThoiHanSuDungThang() {
+        return thoiHanSuDungThang;
     }
 
-    public void setNgayHetHan(LocalDate ngayHetHan) {
-        this.ngayHetHan = ngayHetHan;
-    }
-
-    public boolean daHetHan() {
-        return ngayHetHan != null && ngayHetHan.isBefore(LocalDate.now());
+    public void setThoiHanSuDungThang(Integer thoiHanSuDungThang) {
+        this.thoiHanSuDungThang = thoiHanSuDungThang;
     }
 
     @Override
     public String getThongTinRieng() {
-        return "Hạn sử dụng: " + (ngayHetHan != null ? ngayHetHan : "chưa cập nhật")
-                + (daHetHan() ? " (ĐÃ HẾT HẠN)" : "");
+        return "Thời hạn sử dụng: "
+                + (thoiHanSuDungThang != null ? thoiHanSuDungThang + " tháng" : "chưa cập nhật");
     }
 
     @Override

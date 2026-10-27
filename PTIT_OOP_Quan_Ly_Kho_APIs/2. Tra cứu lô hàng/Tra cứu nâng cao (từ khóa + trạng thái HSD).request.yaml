@@ -1,7 +1,0 @@
-$kind: http-request
-url: http://localhost:8080/api/lo-hang/tra-cuu-nang-cao?keyword=Vinamilk&trangThai=con_han
-method: GET
-queryParams:
-  keyword: Vinamilk
-  trangThai: con_han
-order: 3000

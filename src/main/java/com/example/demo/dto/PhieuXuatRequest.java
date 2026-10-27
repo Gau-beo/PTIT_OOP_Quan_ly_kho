@@ -4,7 +4,7 @@ import java.util.List;
 
 public class PhieuXuatRequest {
     private String nguoiNhan;
-    private Long nguoiTaoId;
+    private String nguoiTaoEmail;
     private List<ChiTietPhieuXuatRequest> chiTietList;
 
     public String getNguoiNhan() {
@@ -15,12 +15,12 @@ public class PhieuXuatRequest {
         this.nguoiNhan = nguoiNhan;
     }
 
-    public Long getNguoiTaoId() {
-        return nguoiTaoId;
+    public String getNguoiTaoEmail() {
+        return nguoiTaoEmail;
     }
 
-    public void setNguoiTaoId(Long nguoiTaoId) {
-        this.nguoiTaoId = nguoiTaoId;
+    public void setNguoiTaoEmail(String nguoiTaoEmail) {
+        this.nguoiTaoEmail = nguoiTaoEmail;
     }
 
     public List<ChiTietPhieuXuatRequest> getChiTietList() {

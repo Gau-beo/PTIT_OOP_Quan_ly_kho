@@ -69,15 +69,15 @@ public class DataInitializer implements CommandLineRunner {
         LocalDate today = LocalDate.now();
 
         Product sp1 = timHoacTao(LoaiSanPham.THUC_PHAM, "SP001", "Sữa tươi tiệt trùng Vinamilk 1L", "Hộp", 35000.0,
-                "Bảo quản nơi khô ráo, tránh ánh nắng trực tiếp. Nhiệt độ phòng.", null);
+                "Bảo quản nơi khô ráo, tránh ánh nắng trực tiếp. Nhiệt độ phòng.", hanDung(6));
         Product sp2 = timHoacTao(LoaiSanPham.THUC_PHAM, "SP002", "Mì ăn liền Hảo Hảo Tôm Chua Cay", "Thùng", 125000.0,
-                "Hàng dễ vỡ vụn khi vận chuyển, không xếp chồng quá 8 thùng.", null);
+                "Hàng dễ vỡ vụn khi vận chuyển, không xếp chồng quá 8 thùng.", hanDung(12));
         Product sp3 = timHoacTao(LoaiSanPham.THUC_PHAM, "SP003", "Dầu ăn Simply 1L", "Chai", 58000.0,
-                "Hàng chất lỏng, kiểm tra kỹ nắp chai trước khi nhập/xuất kho.", null);
+                "Hàng chất lỏng, kiểm tra kỹ nắp chai trước khi nhập/xuất kho.", hanDung(18));
         Product sp4 = timHoacTao(LoaiSanPham.THUC_PHAM, "SP004", "Bánh Cosy Mè Giòn 288g", "Gói", 42000.0,
-                "Sản phẩm cận date cần ưu tiên xuất trước theo nguyên tắc FEFO.", null);
+                "Sản phẩm cận date cần ưu tiên xuất trước theo nguyên tắc FEFO.", hanDung(9));
         Product sp5 = timHoacTao(LoaiSanPham.THUC_PHAM, "SP005", "Nước ngọt Coca-Cola 320ml", "Lon", 10000.0,
-                "Hàng đóng lốc, kiểm tra hạn dập nổi trên đáy lon.", null);
+                "Hàng đóng lốc, kiểm tra hạn dập nổi trên đáy lon.", hanDung(12));
 
         Product sp6 = timHoacTao(LoaiSanPham.DE_VO, "SP006", "Ly thủy tinh Luminarc (bộ 6)", "Hộp", 180000.0,
                 "Hàng dễ vỡ, xếp tối đa 3 tầng, tránh va đập khi vận chuyển.", p -> {
@@ -111,6 +111,11 @@ public class DataInitializer implements CommandLineRunner {
         taoLo("LH-KES-01", today.minusDays(10), null, 20, "Xuân Hòa Việt Nam", sp9);
 
         System.out.println("===> [DataInitializer] Dữ liệu mẫu đã sẵn sàng!");
+    }
+
+    /** Thời hạn sử dụng tiêu chuẩn (tháng) cho sản phẩm thực phẩm mẫu. */
+    private static Consumer<Product> hanDung(int thang) {
+        return p -> ((SanPhamThucPham) p).setThoiHanSuDungThang(thang);
     }
 
     private Product timHoacTao(LoaiSanPham loai, String ma, String ten, String dvt, double gia,

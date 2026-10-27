@@ -55,8 +55,8 @@ public class PhieuXuatService {
             throw new IllegalArgumentException("Phiếu xuất phải có ít nhất một dòng sản phẩm!");
         }
 
-        NguoiDung nguoiTao = nguoiDungRepository.findById(request.getNguoiTaoId())
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng ID: " + request.getNguoiTaoId()));
+        NguoiDung nguoiTao = nguoiDungRepository.findByEmail(request.getNguoiTaoEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("Không xác định được người đăng nhập!"));
 
         PhieuXuat phieuXuat = new PhieuXuat(LocalDateTime.now(), request.getNguoiNhan().trim(), nguoiTao);
 
