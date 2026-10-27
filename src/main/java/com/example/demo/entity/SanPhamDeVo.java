@@ -1,30 +1,39 @@
-package com.nhom11.quanlykho.model;
+package com.example.demo.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @DiscriminatorValue("DE_VO")
-@Getter
-@Setter
-@NoArgsConstructor
-public class SanPhamDeVo extends SanPham {
+public class SanPhamDeVo extends Product {
 
-    // Ví dụ giá trị: THAP, TRUNG_BINH, CAO
     @Column(name = "muc_do_de_vo")
     private String mucDoDeVo;
 
     @Column(name = "yeu_cau_dong_goi_dac_biet")
     private Boolean yeuCauDongGoiDacBiet = false;
 
-    public SanPhamDeVo(String tenSanPham, String donViTinh, Integer soLuongTon, Integer nguongCanhBao,
-                        DanhMuc danhMuc, String mucDoDeVo, Boolean yeuCauDongGoiDacBiet) {
-        super(tenSanPham, donViTinh, soLuongTon, nguongCanhBao, danhMuc);
+    public SanPhamDeVo() {
+    }
+
+    public SanPhamDeVo(String maSp, String tenSanPham, String donViTinh, Double donGia, String ghiChu) {
+        super(maSp, tenSanPham, donViTinh, donGia, ghiChu);
+    }
+
+    public String getMucDoDeVo() {
+        return mucDoDeVo;
+    }
+
+    public void setMucDoDeVo(String mucDoDeVo) {
         this.mucDoDeVo = mucDoDeVo;
+    }
+
+    public Boolean getYeuCauDongGoiDacBiet() {
+        return yeuCauDongGoiDacBiet;
+    }
+
+    public void setYeuCauDongGoiDacBiet(Boolean yeuCauDongGoiDacBiet) {
         this.yeuCauDongGoiDacBiet = yeuCauDongGoiDacBiet;
     }
 

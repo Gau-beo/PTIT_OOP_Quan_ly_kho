@@ -12,6 +12,8 @@ import com.example.demo.entity.LoHang;
 public interface LoHangRepository extends JpaRepository<LoHang, Long> {
     List<LoHang> findByMaLoHangContaining(String maLoHang);
 
+    boolean existsByMaLoHang(String maLoHang);
+
     List<LoHang> findByMaLoHangContainingIgnoreCaseOrProduct_TenSanPhamContainingIgnoreCase(String maLoHang, String tenSanPham);
 
     List<LoHang> findByHanSuDungBefore(LocalDate now);

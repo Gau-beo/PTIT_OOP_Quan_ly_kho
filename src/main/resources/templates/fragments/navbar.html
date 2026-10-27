@@ -22,7 +22,8 @@
         .navbar-custom .nav-link {
             color: rgba(255, 255, 255, 0.9) !important;
             font-weight: 500;
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 0.8rem;
+            white-space: nowrap;
             border-radius: 0.375rem;
             transition: all 0.2s ease;
         }
@@ -61,8 +62,8 @@
     </style>
 </head>
 <body>
-    <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top mb-4">
-        <div class="container">
+    <nav th:fragment="navbar" class="navbar navbar-expand-xl navbar-dark navbar-custom sticky-top mb-4">
+        <div class="container-fluid px-4">
             <a class="navbar-brand fw-bold d-flex align-items-center gap-2" th:href="@{/}">
                 <i class="bi bi-box-seam-fill fs-4 text-warning"></i>
                 <span>PTIT - QUẢN LÝ KHO</span>
@@ -85,6 +86,21 @@
                     <li class="nav-item">
                         <a class="nav-link" th:classappend="${activePage == 'san-pham' ? 'active' : ''}" th:href="@{/san-pham}">
                             <i class="bi bi-sticky me-1"></i> Ghi chú sản phẩm
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${activePage == 'phieu-nhap' ? 'active' : ''}" th:href="@{/phieunhap}">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Phiếu nhập
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${activePage == 'phieu-xuat' ? 'active' : ''}" th:href="@{/phieuxuat}">
+                            <i class="bi bi-box-arrow-up me-1"></i> Phiếu xuất
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${activePage == 'nha-cung-cap' ? 'active' : ''}" th:href="@{/nha-cung-cap}">
+                            <i class="bi bi-truck me-1"></i> Nhà cung cấp
                         </a>
                     </li>
                 </ul>

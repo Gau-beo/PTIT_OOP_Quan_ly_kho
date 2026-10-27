@@ -36,6 +36,7 @@
                                 <th style="width: 50px;">STT</th>
                                 <th>Mã SP</th>
                                 <th>Tên Sản Phẩm</th>
+                                <th>Loại / Đặc điểm riêng</th>
                                 <th>ĐVT</th>
                                 <th>Đơn Giá</th>
                                 <th>Tồn Kho</th>
@@ -48,6 +49,10 @@
                                 <td th:text="${stat.count}"></td>
                                 <td class="fw-bold text-primary font-monospace" th:text="${sp.maSanPham}"></td>
                                 <td class="fw-semibold" th:text="${sp.tenSanPham}"></td>
+                                <td>
+                                    <span class="badge text-bg-secondary" th:text="${sp.loaiSanPham.tenHienThi}"></span>
+                                    <div class="small text-muted mt-1" th:text="${sp.thongTinRieng}"></div>
+                                </td>
                                 <td th:text="${sp.donViTinh != null ? sp.donViTinh : 'Cái'}"></td>
                                 <td th:text="${sp.donGia != null ? #numbers.formatDecimal(sp.donGia, 0, 'POINT', 0, 'POINT') + ' đ' : '0 đ'}"></td>
                                 <td>
@@ -75,7 +80,7 @@
                                 </td>
                             </tr>
                             <tr th:if="${danhSachSanPham.empty}">
-                                <td colspan="8" class="text-center py-5 text-muted">
+                                <td colspan="9" class="text-center py-5 text-muted">
                                     <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary"></i>
                                     Chưa có sản phẩm nào. Hãy bấm "Thêm sản phẩm mới" để bắt đầu!
                                 </td>
@@ -92,6 +97,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <form id="formSuaGhiChu" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                     <div class="modal-header bg-primary text-white">
                         <h5 class="modal-title fw-bold" id="modalSuaGhiChuLabel">
                             <i class="bi bi-pencil-square me-2"></i>Cập Nhật Ghi Chú Sản Phẩm
@@ -153,6 +159,53 @@
                             <label class="form-label fw-semibold">Ghi chú sản phẩm</label>
                             <textarea name="ghiChu" class="form-control" rows="3" placeholder="Ghi chú bảo quản hoặc lưu ý đặc biệt..."></textarea>
                         </div>
+                                            <div class="mb-3">
+                            <label class="form-label fw-semibold">Loại sản phẩm <span class="text-danger">*</span></label>
+                            <select name="loai" id="selLoai" class="form-select">
+                                <option th:each="l : ${loaiSanPhams}" th:value="${l.name()}" th:text="${l.tenHienThi}"></option>
+                            </select>
+                            <div class="form-text">Mỗi loại là một lớp con kế thừa từ lớp cha Product, có thuộc tính riêng.</div>
+                        </div>
+                        <div class="nhom-rieng border rounded p-3 mb-2 bg-light" data-loai="THUC_PHAM">
+                            <label class="form-label fw-semibold">Ngày hết hạn (sản phẩm)</label>
+                            <input type="date" name="ngayHetHan" class="form-control">
+                        </div>
+                        <div class="nhom-rieng border rounded p-3 mb-2 bg-light d-none" data-loai="DE_VO">
+                            <label class="form-label fw-semibold">Mức độ dễ vỡ</label>
+                            <select name="mucDoDeVo" class="form-select mb-2">
+                                <option value="Thấp">Thấp</option>
+                                <option value="Trung bình">Trung bình</option>
+                                <option value="Cao">Cao</option>
+                            </select>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="yeuCauDongGoiDacBiet" id="chkDongGoi">
+                                <label class="form-check-label" for="chkDongGoi">Yêu cầu đóng gói đặc biệt</label>
+                            </div>
+                        </div>
+                        <div class="nhom-rieng border rounded p-3 mb-2 bg-light d-none" data-loai="HOA_CHAT">
+                            <label class="form-label fw-semibold">Mức độ rủi ro</label>
+                            <select name="mucDoRuiRo" class="form-select">
+                                <option value="Thấp">Thấp</option>
+                                <option value="Trung bình">Trung bình</option>
+                                <option value="Cao">Cao</option>
+                            </select>
+                        </div>
+                        <div class="nhom-rieng border rounded p-3 mb-2 bg-light d-none" data-loai="DIEN_TU">
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Bảo hành (tháng)</label>
+                                    <input type="number" name="thoiGianBaoHanh" class="form-control" min="0">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-semibold">Công suất (W)</label>
+                                    <input type="number" name="congSuat" class="form-control" min="0" step="any">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="nhom-rieng border rounded p-3 mb-2 bg-light d-none" data-loai="CONG_KENH">
+                            <label class="form-label fw-semibold">Phụ phí vận chuyển (VNĐ)</label>
+                            <input type="number" name="phuPhiVanChuyen" class="form-control" min="0" step="any">
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
@@ -178,6 +231,21 @@
                 document.getElementById('formSuaGhiChu').action = '/san-pham/' + productId + '/ghi-chu';
             });
         });
+    </script>
+    <script>
+        // Hiện đúng nhóm thuộc tính riêng theo loại sản phẩm; nhóm bị ẩn thì disable để không gửi lên server
+        (function () {
+            var sel = document.getElementById('selLoai');
+            function apDung() {
+                document.querySelectorAll('.nhom-rieng').forEach(function (g) {
+                    var on = g.getAttribute('data-loai') === sel.value;
+                    g.classList.toggle('d-none', !on);
+                    g.querySelectorAll('input,select').forEach(function (i) { i.disabled = !on; });
+                });
+            }
+            sel.addEventListener('change', apDung);
+            apDung();
+        })();
     </script>
 </body>
 </html>

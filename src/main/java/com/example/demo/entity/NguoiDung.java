@@ -32,6 +32,11 @@ public class NguoiDung {
         this.vaiTro = vaiTro;
     }
 
+    /** Đa hình: lớp con ghi đè để mô tả loại tài khoản. */
+    public String getMoTaTaiKhoan() {
+        return "Tài khoản";
+    }
+
     public long getId() {
         return id;
     }

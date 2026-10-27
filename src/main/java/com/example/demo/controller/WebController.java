@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.entity.LoHang;
+import com.example.demo.entity.LoaiSanPham;
+import com.example.demo.factory.SanPhamFactory;
 import com.example.demo.entity.Product;
 import com.example.demo.service.LoHangService;
 import com.example.demo.service.ProductService;
@@ -22,10 +25,12 @@ public class WebController {
 
     private final ProductService productService;
     private final LoHangService loHangService;
+    private final SanPhamFactory sanPhamFactory;
 
-    public WebController(ProductService productService, LoHangService loHangService) {
+    public WebController(ProductService productService, LoHangService loHangService, SanPhamFactory sanPhamFactory) {
         this.productService = productService;
         this.loHangService = loHangService;
+        this.sanPhamFactory = sanPhamFactory;
     }
 
     // 1. TRANG BÁO CÁO & THỐNG KÊ (Trang chủ)
@@ -98,6 +103,7 @@ public class WebController {
     public String trangSanPham(Model model) {
         List<Product> danhSachSanPham = productService.layTatCaSanPham();
         model.addAttribute("danhSachSanPham", danhSachSanPham);
+        model.addAttribute("loaiSanPhams", LoaiSanPham.values());
         model.addAttribute("activePage", "san-pham");
         return "san-pham";
     }
@@ -119,7 +125,7 @@ public class WebController {
         return "redirect:/san-pham";
     }
 
-    // Thêm sản phẩm mới từ giao diện Web
+    // Thêm sản phẩm mới từ giao diện Web (Factory Pattern tạo đúng lớp con theo loại)
     @PostMapping("/san-pham/them")
     public String themSanPham(
             @RequestParam String maSanPham,
@@ -127,12 +133,20 @@ public class WebController {
             @RequestParam(required = false) String donViTinh,
             @RequestParam(required = false, defaultValue = "0") Double donGia,
             @RequestParam(required = false) String ghiChu,
+            @RequestParam(defaultValue = "THUC_PHAM") LoaiSanPham loai,
+            @RequestParam Map<String, String> thuocTinhRieng,
             RedirectAttributes redirectAttributes) {
 
         try {
-            Product product = new Product(maSanPham, tenSanPham, donViTinh, donGia, ghiChu);
+            String ma = maSanPham.trim();
+            if (productService.tonTaiMaSanPham(ma)) {
+                throw new IllegalArgumentException("Mã sản phẩm [" + ma + "] đã tồn tại!");
+            }
+            Product product = sanPhamFactory.taoSanPham(loai, ma, tenSanPham.trim(), donViTinh, donGia, ghiChu);
+            sanPhamFactory.capNhatThuocTinhRieng(product, thuocTinhRieng);
             productService.luuSanPham(product);
-            redirectAttributes.addFlashAttribute("thongBaoThanhCong", "Thêm sản phẩm [" + tenSanPham + "] thành công!");
+            redirectAttributes.addFlashAttribute("thongBaoThanhCong",
+                    "Thêm sản phẩm [" + tenSanPham + "] (" + loai.getTenHienThi() + ") thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("thongBaoLoi", "Lỗi khi thêm sản phẩm: " + e.getMessage());
         }

@@ -5,6 +5,11 @@ import com.example.demo.repository.NguoiDungRepository;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import com.example.demo.entity.NguoiDung;
 
 @Service
 public class NguoiDungService {
@@ -19,6 +24,11 @@ public class NguoiDungService {
 
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    @Transactional(readOnly = true)
+    public List<NguoiDung> layTatCa() {
+        return repository.findAll();
     }
 
     // Kiểm tra email đã tồn tại

@@ -22,6 +22,7 @@ public class NhaCungCapController {
         
         model.addAttribute("nhaCungCapMoi", new NhaCungCap());
         
+        model.addAttribute("activePage", "nha-cung-cap");
         return "nhacungcap";
     }
 

@@ -7,17 +7,23 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "products")
-public class Product {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "loai_san_pham")
+public abstract class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -50,11 +56,25 @@ public class Product {
         this.ghiChu = ghiChu;
     }
 
+
+    // ===== Đa hình (Polymorphism): mỗi lớp con tự định nghĩa =====
+    public abstract String getThongTinRieng();
+
+    public abstract LoaiSanPham getLoaiSanPham();
+
     public int getTongTonKho() {
         if (loHangs == null || loHangs.isEmpty()) {
             return 0;
         }
         return loHangs.stream().mapToInt(LoHang::getSoLuong).sum();
+    }
+
+    /** Tồn kho có thể xuất: không tính các lô đã hết hạn. */
+    public int getTonKhoKhaDung() {
+        if (loHangs == null) {
+            return 0;
+        }
+        return loHangs.stream().filter(lh -> !lh.isHetHan()).mapToInt(LoHang::getSoLuong).sum();
     }
 
     public int getSoLuongLoHang() {

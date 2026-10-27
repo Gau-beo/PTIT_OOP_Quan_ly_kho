@@ -24,6 +24,11 @@ public class TaiKhoanAdmin extends NguoiDung {
         this.chucVu = chucVu;
     }
 
+    @Override
+    public String getMoTaTaiKhoan() {
+        return "Quản trị viên" + (chucVu != null ? " - " + chucVu : "");
+    }
+
     public String getChucVu() {
         return chucVu;
     }

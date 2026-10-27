@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/navbar :: header('Quản lý Phiếu Nhập')}"></head>
+<body>
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+<div th:replace="~{fragments/navbar :: alerts}"></div>
+
+<div class="container pb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-1"><i class="bi bi-box-arrow-in-right text-success me-2"></i>Quản Lý Phiếu Nhập</h3>
+            <p class="text-muted mb-0">Mỗi dòng của phiếu nhập sẽ tự động sinh một lô hàng mới trong kho</p>
+        </div>
+        <button type="button" class="btn btn-success shadow-sm" data-bs-toggle="modal" data-bs-target="#modalPhieuNhap">
+            <i class="bi bi-plus-circle me-1"></i> Tạo phiếu nhập
+        </button>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span class="fw-bold"><i class="bi bi-list-check me-2"></i>Danh sách phiếu nhập</span>
+            <span class="badge bg-secondary" th:text="${danhSachPhieuNhap.size()} + ' phiếu'"></span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Mã phiếu</th>
+                            <th>Ngày nhập</th>
+                            <th>Nhà cung cấp</th>
+                            <th>Chi tiết hàng nhập</th>
+                            <th class="text-end">Tổng tiền (VNĐ)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="pn : ${danhSachPhieuNhap}">
+                            <td class="fw-bold text-success" th:text="'PN-' + ${pn.id}"></td>
+                            <td th:text="${#dates.format(pn.ngayNhap, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td th:text="${pn.nhaCungCap}"></td>
+                            <td>
+                                <div th:each="ct : ${pn.chiTietPhieuNhaps}" class="small">
+                                    <span class="fw-semibold" th:text="${ct.sanPham.tenSanPham}"></span>
+                                    &times; <strong th:text="${ct.soLuong}"></strong>
+                                    <span class="text-muted" th:text="'@ ' + ${#numbers.formatDecimal(ct.donGiaNhap, 0, 'POINT', 0, 'POINT')}"></span>
+                                    <span class="text-muted" th:if="${ct.hanSuDung != null}"
+                                          th:text="'- HSD ' + ${#temporals.format(ct.hanSuDung, 'dd/MM/yyyy')}"></span>
+                                </div>
+                            </td>
+                            <td class="text-end fw-bold" th:text="${pn.tongTien != null ? #numbers.formatDecimal(pn.tongTien, 0, 'POINT', 0, 'POINT') : '0'}"></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(danhSachPhieuNhap)}">
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-2"></i>Chưa có phiếu nhập nào.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: TẠO PHIẾU NHẬP -->
+<div class="modal fade" id="modalPhieuNhap" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <form th:action="@{/phieunhap/them}" method="post">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-box-arrow-in-right me-2"></i>Tạo phiếu nhập mới</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Nhà cung cấp <span class="text-danger">*</span></label>
+                        <input type="text" name="nhaCungCap" list="dsNcc" class="form-control" placeholder="Chọn hoặc nhập tên nhà cung cấp" required>
+                        <datalist id="dsNcc">
+                            <option th:each="n : ${danhSachNCC}" th:value="${n.tenNCC}"></option>
+                        </datalist>
+                    </div>
+                    <table class="table table-sm align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 38%;">Sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Đơn giá nhập (VNĐ)</th>
+                                <th>Hạn sử dụng</th>
+                                <th style="width: 50px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="dongNhap"></tbody>
+                    </table>
+                    <button type="button" id="btnThemDong" class="btn btn-sm btn-outline-success">
+                        <i class="bi bi-plus-lg me-1"></i>Thêm dòng sản phẩm
+                    </button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-success"><i class="bi bi-save me-1"></i> Lưu phiếu nhập</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<template id="tplDong">
+    <tr>
+        <td>
+            <select name="sanPhamId" class="form-select form-select-sm" required>
+                <option value="" disabled selected>-- Chọn sản phẩm --</option>
+                <option th:each="sp : ${danhSachSanPham}" th:value="${sp.id}" th:text="${sp.maSanPham + ' - ' + sp.tenSanPham}"></option>
+            </select>
+        </td>
+        <td><input type="number" name="soLuong" class="form-control form-control-sm" min="1" value="1" required></td>
+        <td><input type="number" name="donGiaNhap" class="form-control form-control-sm" min="0" step="any" value="0" required></td>
+        <td><input type="date" name="hanSuDung" class="form-control form-control-sm"></td>
+        <td><button type="button" class="btn btn-sm btn-outline-danger btn-xoa-dong" title="Xóa dòng"><i class="bi bi-x-lg"></i></button></td>
+    </tr>
+</template>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    (function () {
+        var tbody = document.getElementById('dongNhap');
+        var tpl = document.getElementById('tplDong');
+        function themDong() { tbody.appendChild(tpl.content.cloneNode(true)); }
+        document.getElementById('btnThemDong').addEventListener('click', themDong);
+        tbody.addEventListener('click', function (e) {
+            var btn = e.target.closest('.btn-xoa-dong');
+            if (btn && tbody.rows.length > 1) { btn.closest('tr').remove(); }
+        });
+        themDong();
+    })();
+</script>
+</body>
+</html>

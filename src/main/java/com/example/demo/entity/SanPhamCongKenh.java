@@ -1,25 +1,29 @@
-package com.nhom11.quanlykho.model;
+package com.example.demo.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @DiscriminatorValue("CONG_KENH")
-@Getter
-@Setter
-@NoArgsConstructor
-public class SanPhamCongKenh extends SanPham {
+public class SanPhamCongKenh extends Product {
 
     @Column(name = "phu_phi_van_chuyen")
     private Double phuPhiVanChuyen;
 
-    public SanPhamCongKenh(String tenSanPham, String donViTinh, Integer soLuongTon,
-                            Integer nguongCanhBao, DanhMuc danhMuc, Double phuPhiVanChuyen) {
-        super(tenSanPham, donViTinh, soLuongTon, nguongCanhBao, danhMuc);
+    public SanPhamCongKenh() {
+        // Hàm tạo rỗng thay thế cho @NoArgsConstructor
+    }
+
+    public SanPhamCongKenh(String maSp, String tenSanPham, String donViTinh, Double donGia, String ghiChu) {
+        super(maSp, tenSanPham, donViTinh, donGia, ghiChu);
+    }
+
+    public Double getPhuPhiVanChuyen() {
+        return phuPhiVanChuyen;
+    }
+
+    public void setPhuPhiVanChuyen(Double phuPhiVanChuyen) {
         this.phuPhiVanChuyen = phuPhiVanChuyen;
     }
 

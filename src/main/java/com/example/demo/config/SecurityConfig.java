@@ -36,6 +36,7 @@ public class SecurityConfig {
 
                 // Ai cũng được truy cập
                 .requestMatchers(
+                        "/error",
                         "/login",
                         "/register",
                         "/css/**",

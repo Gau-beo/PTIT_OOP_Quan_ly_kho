@@ -37,6 +37,10 @@ public class ProductService {
         return productRepository.sumTotalInventory();
     }
 
+    public boolean tonTaiMaSanPham(String ma) {
+        return productRepository.existsByMaSanPham(ma);
+    }
+
     public Product luuSanPham(Product product) {
         return productRepository.save(product);
     }

@@ -1,27 +1,29 @@
-package com.nhom11.quanlykho.model;
+package com.example.demo.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import java.time.LocalDate;
 
 @Entity
 @DiscriminatorValue("THUC_PHAM")
-@Getter
-@Setter
-@NoArgsConstructor
-public class SanPhamThucPham extends SanPham {
+public class SanPhamThucPham extends Product {
 
     @Column(name = "ngay_het_han")
     private LocalDate ngayHetHan;
 
-    public SanPhamThucPham(String tenSanPham, String donViTinh, Integer soLuongTon,
-                            Integer nguongCanhBao, DanhMuc danhMuc, LocalDate ngayHetHan) {
-        super(tenSanPham, donViTinh, soLuongTon, nguongCanhBao, danhMuc);
+    public SanPhamThucPham() {
+    }
+
+    public SanPhamThucPham(String maSp, String tenSanPham, String donViTinh, Double donGia, String ghiChu) {
+        super(maSp, tenSanPham, donViTinh, donGia, ghiChu);
+    }
+
+    public LocalDate getNgayHetHan() {
+        return ngayHetHan;
+    }
+
+    public void setNgayHetHan(LocalDate ngayHetHan) {
         this.ngayHetHan = ngayHetHan;
     }
 

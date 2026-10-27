@@ -24,6 +24,11 @@ public class TaiKhoanNguoiDung extends NguoiDung {
         this.diaChi = diaChi;
     }
 
+    @Override
+    public String getMoTaTaiKhoan() {
+        return "Người dùng" + (diaChi != null ? " - " + diaChi : "");
+    }
+
     public String getDiaChi() {
         return diaChi;
     }

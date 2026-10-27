@@ -1,29 +1,39 @@
-package com.nhom11.quanlykho.model;
+package com.example.demo.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @DiscriminatorValue("DIEN_TU")
-@Getter
-@Setter
-@NoArgsConstructor
-public class SanPhamDienTu extends SanPham {
+public class SanPhamDienTu extends Product {
 
     @Column(name = "thoi_gian_bao_hanh")
-    private Integer thoiGianBaoHanh; // đơn vị: tháng
+    private Integer thoiGianBaoHanh;
 
     @Column(name = "cong_suat")
-    private Double congSuat; // đơn vị: watt
+    private Double congSuat;
 
-    public SanPhamDienTu(String tenSanPham, String donViTinh, Integer soLuongTon, Integer nguongCanhBao,
-                          DanhMuc danhMuc, Integer thoiGianBaoHanh, Double congSuat) {
-        super(tenSanPham, donViTinh, soLuongTon, nguongCanhBao, danhMuc);
+    public SanPhamDienTu() {
+    }
+
+    public SanPhamDienTu(String maSp, String tenSanPham, String donViTinh, Double donGia, String ghiChu) {
+        super(maSp, tenSanPham, donViTinh, donGia, ghiChu);
+    }
+
+    public Integer getThoiGianBaoHanh() {
+        return thoiGianBaoHanh;
+    }
+
+    public void setThoiGianBaoHanh(Integer thoiGianBaoHanh) {
         this.thoiGianBaoHanh = thoiGianBaoHanh;
+    }
+
+    public Double getCongSuat() {
+        return congSuat;
+    }
+
+    public void setCongSuat(Double congSuat) {
         this.congSuat = congSuat;
     }
 

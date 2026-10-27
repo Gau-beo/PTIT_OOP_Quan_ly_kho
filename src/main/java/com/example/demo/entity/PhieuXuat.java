@@ -2,6 +2,8 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "PhieuXuat")
@@ -9,7 +11,7 @@ public class PhieuXuat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(name = "ngayXuat")
     private LocalDateTime ngayXuat;
@@ -21,6 +23,9 @@ public class PhieuXuat {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "nguoiTaoId")
     private NguoiDung nguoiTao;
+
+    @OneToMany(mappedBy = "phieuXuat", cascade = CascadeType.ALL)
+    private List<ChiTietPhieuXuat> chiTietList = new ArrayList<>();
 
     public PhieuXuat() {
     }
@@ -40,11 +45,11 @@ public class PhieuXuat {
     }
 
     // Getters & Setters
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -70,5 +75,13 @@ public class PhieuXuat {
 
     public void setNguoiTao(NguoiDung nguoiTao) {
         this.nguoiTao = nguoiTao;
+    }
+
+    public List<ChiTietPhieuXuat> getChiTietList() {
+        return chiTietList;
+    }
+
+    public void setChiTietList(List<ChiTietPhieuXuat> chiTietList) {
+        this.chiTietList = chiTietList;
     }
 }

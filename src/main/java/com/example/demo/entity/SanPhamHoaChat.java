@@ -1,26 +1,28 @@
-package com.nhom11.quanlykho.model;
+package com.example.demo.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @DiscriminatorValue("HOA_CHAT")
-@Getter
-@Setter
-@NoArgsConstructor
-public class SanPhamHoaChat extends SanPham {
+public class SanPhamHoaChat extends Product {
 
-    // Ví dụ giá trị: THAP, TRUNG_BINH, CAO
     @Column(name = "muc_do_rui_ro")
     private String mucDoRuiRo;
 
-    public SanPhamHoaChat(String tenSanPham, String donViTinh, Integer soLuongTon,
-                           Integer nguongCanhBao, DanhMuc danhMuc, String mucDoRuiRo) {
-        super(tenSanPham, donViTinh, soLuongTon, nguongCanhBao, danhMuc);
+    public SanPhamHoaChat() {
+    }
+
+    public SanPhamHoaChat(String maSp, String tenSanPham, String donViTinh, Double donGia, String ghiChu) {
+        super(maSp, tenSanPham, donViTinh, donGia, ghiChu);
+    }
+
+    public String getMucDoRuiRo() {
+        return mucDoRuiRo;
+    }
+
+    public void setMucDoRuiRo(String mucDoRuiRo) {
         this.mucDoRuiRo = mucDoRuiRo;
     }
 
