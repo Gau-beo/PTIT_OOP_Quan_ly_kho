@@ -107,8 +107,8 @@
 
                 <!-- Khu vực tài khoản (phần mới) -->
                 <div class="d-flex align-items-center gap-2">
-                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin}" class="btn btn-sm btn-danger">
-                        <i class="bi bi-shield-lock me-1"></i>Quản trị
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/tai-khoan}" class="btn btn-sm btn-danger">
+                        <i class="bi bi-people-fill me-1"></i>Quản lý tài khoản
                     </a>
                     <span sec:authorize="isAuthenticated()" class="text-white small d-none d-lg-inline text-truncate" style="max-width: 200px;">
                         <i class="bi bi-person-circle me-1"></i><span sec:authentication="name"></span>

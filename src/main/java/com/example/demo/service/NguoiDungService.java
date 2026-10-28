@@ -66,6 +66,62 @@ public class NguoiDungService {
         return repository.save(nguoiDung);
     }
 
+    // Kiểm tra email trùng lặp khi cập nhật (bỏ qua ID hiện tại)
+    public boolean kiemTraEmailTrungLap(String email, Long excludeId) {
+        var existing = repository.findByEmail(email.trim());
+        return existing.isPresent() && (excludeId == null || existing.get().getId() != excludeId.longValue());
+    }
+
+    // Tìm tài khoản theo ID
+    public java.util.Optional<NguoiDung> timTheoId(Long id) {
+        return repository.findById(id);
+    }
+
+    // Thêm tài khoản mới từ trang quản trị (hỗ trợ đa hình Admin, Quản lý, User)
+    public NguoiDung themTaiKhoan(
+            String hoTen,
+            String email,
+            String matKhau,
+            String vaiTro) {
+
+        String encodedPassword = passwordEncoder.encode(matKhau);
+        String trimmedEmail = email.trim();
+        NguoiDung nguoiDung;
+
+        if ("ADMIN".equalsIgnoreCase(vaiTro)) {
+            nguoiDung = new com.example.demo.entity.TaiKhoanAdmin(hoTen, trimmedEmail, encodedPassword, "ADMIN");
+        } else if ("QUAN_LY".equalsIgnoreCase(vaiTro)) {
+            nguoiDung = new com.example.demo.entity.TaiKhoanQuanLy(hoTen, trimmedEmail, encodedPassword, "QUAN_LY");
+        } else {
+            nguoiDung = new TaiKhoanNguoiDung(hoTen, trimmedEmail, encodedPassword, "USER", "");
+        }
+
+        return repository.save(nguoiDung);
+    }
+
+    // Cập nhật thông tin tài khoản
+    @Transactional
+    public NguoiDung capNhat(
+            Long id,
+            String hoTen,
+            String email,
+            String matKhau,
+            String vaiTro) {
+
+        NguoiDung nguoiDung = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng có ID: " + id));
+
+        nguoiDung.setHoTen(hoTen);
+        nguoiDung.setEmail(email.trim());
+        nguoiDung.setVaiTro(vaiTro);
+
+        if (matKhau != null && !matKhau.isBlank()) {
+            nguoiDung.setMatKhau(passwordEncoder.encode(matKhau));
+        }
+
+        return repository.save(nguoiDung);
+    }
+
     /**
      * Admin xóa một tài khoản. Các chốt chặn:
      *  - không xóa tài khoản ADMIN (kể cả chính mình);

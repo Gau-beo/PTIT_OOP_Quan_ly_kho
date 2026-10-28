@@ -98,16 +98,12 @@ public class TaiKhoanController {
 
 
     // =========================
-    // ADMIN
+    // ADMIN -> Quản lý tài khoản CRUD
     // =========================
 
     @GetMapping("/admin")
-    public String admin(Model model) {
-
-        model.addAttribute("danhSachTaiKhoan", service.layTatCa());
-        model.addAttribute("activePage", "admin");
-
-        return "admin";
+    public String admin() {
+        return "redirect:/admin/tai-khoan";
     }
 
 
