@@ -12,7 +12,7 @@
             <h3 class="fw-bold mb-1"><i class="bi bi-box-arrow-in-right text-success me-2"></i>Quản Lý Phiếu Nhập</h3>
             <p class="text-muted mb-0">Mỗi dòng của phiếu nhập sẽ tự động sinh một lô hàng mới trong kho</p>
         </div>
-        <button type="button" sec:authorize="hasRole('ADMIN')" class="btn btn-success shadow-sm" data-bs-toggle="modal" data-bs-target="#modalPhieuNhap">
+        <button type="button" sec:authorize="hasAnyRole('ADMIN', 'QUAN_LY')" class="btn btn-success shadow-sm" data-bs-toggle="modal" data-bs-target="#modalPhieuNhap">
             <i class="bi bi-plus-circle me-1"></i> Tạo phiếu nhập
         </button>
     </div>

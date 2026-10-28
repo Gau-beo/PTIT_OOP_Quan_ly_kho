@@ -37,45 +37,38 @@ public class SecurityConfig {
                         "/register",
                         "/css/**",
                         "/js/**",
-                        "/images/**"
+                        "/images/**",
+                        "/webjars/**"
                 ).permitAll()
 
                 .requestMatchers("/admin/**")
                 .hasRole("ADMIN")
 
-                .requestMatchers("/user/**")
-                .hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/quan-ly/**")
+                .hasAnyRole("QUAN_LY", "ADMIN")
+
+                .requestMatchers("/user/**", "/nguoi-dung/**")
+                .hasAnyRole("USER", "QUAN_LY", "ADMIN")
 
                 .requestMatchers(HttpMethod.POST,
                         "/phieunhap/**",
+                        "/phieuxuat/**",
                         "/nha-cung-cap/**",
                         "/san-pham/**",
                         "/lo-hang/**")
-                .hasRole("ADMIN")
+                .hasAnyRole("ADMIN", "QUAN_LY")
 
                 .anyRequest()
                 .authenticated()
             )
 
-
             .formLogin(form -> form
-
                 .loginPage("/login")
-
                 .loginProcessingUrl("/login")
-
-                .defaultSuccessUrl(
-                        "/home",
-                        true
-                )
-
-                .failureUrl(
-                        "/login?error=true"
-                )
-
+                .defaultSuccessUrl("/", true)
+                .failureUrl("/login?error=true")
                 .permitAll()
             )
-
 
             .logout(logout -> logout
 

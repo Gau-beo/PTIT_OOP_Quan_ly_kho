@@ -104,10 +104,16 @@
                 </ul>
 
                 <div class="d-flex align-items-center gap-2">
-                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin}" class="btn btn-sm btn-danger">
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/dashboard}" class="btn btn-sm btn-danger shadow-sm">
                         <i class="bi bi-shield-lock me-1"></i>Quản trị
                     </a>
-                    <span sec:authorize="isAuthenticated()" class="text-white small d-none d-lg-inline text-truncate" style="max-width: 200px;">
+                    <a sec:authorize="hasRole('QUAN_LY')" th:href="@{/quan-ly/dashboard}" class="btn btn-sm btn-warning text-dark shadow-sm">
+                        <i class="bi bi-person-badge me-1"></i>Quản lý
+                    </a>
+                    <a sec:authorize="hasRole('USER')" th:href="@{/nguoi-dung/dashboard}" class="btn btn-sm btn-info text-white shadow-sm">
+                        <i class="bi bi-person me-1"></i>Người dùng
+                    </a>
+                    <span sec:authorize="isAuthenticated()" class="text-white small d-none d-lg-inline text-truncate ms-1" style="max-width: 200px;">
                         <i class="bi bi-person-circle me-1"></i><span sec:authentication="name"></span>
                     </span>
                     <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="m-0">

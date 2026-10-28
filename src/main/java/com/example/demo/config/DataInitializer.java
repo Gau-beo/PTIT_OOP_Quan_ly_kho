@@ -52,6 +52,13 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("===> [DataInitializer] Đã tạo tài khoản admin@ptit.edu.vn / admin123");
         }
 
+        if (!nguoiDungRepository.existsByEmail("quanly@ptit.edu.vn")) {
+            nguoiDungRepository.save(new TaiKhoanQuanLy(
+                    "Quản lý kho", "quanly@ptit.edu.vn",
+                    passwordEncoder.encode("quanly123"), "QUAN_LY"));
+            System.out.println("===> [DataInitializer] Đã tạo tài khoản quanly@ptit.edu.vn / quanly123");
+        }
+
         if (nhaCungCapRepository.count() == 0) {
             taoNcc("Vinamilk Việt Nam", "10 Tân Trào, Quận 7, TP.HCM", "02854155555");
             taoNcc("Acecook Việt Nam", "Lô II-3, KCN Tân Bình, TP.HCM", "02838154064");

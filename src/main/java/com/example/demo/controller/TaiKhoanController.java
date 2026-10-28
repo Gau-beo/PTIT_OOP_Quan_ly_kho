@@ -17,26 +17,19 @@ public class TaiKhoanController {
 
     private final NguoiDungService service;
 
-    public TaiKhoanController(
-            NguoiDungService service) {
-
+    public TaiKhoanController(NguoiDungService service) {
         this.service = service;
     }
 
-
     @GetMapping("/login")
     public String login() {
-
-        return "login";
+        return "auth/login";
     }
-
 
     @GetMapping("/register")
     public String register() {
-
-        return "register";
+        return "auth/register";
     }
-
 
     @PostMapping("/register")
     public String register(
@@ -48,17 +41,12 @@ public class TaiKhoanController {
 
         if (matKhau == null || matKhau.isBlank() || matKhau.length() < 6) {
             model.addAttribute("loi", "Mật khẩu phải có ít nhất 6 ký tự!");
-            return "register";
+            return "auth/register";
         }
 
         if (service.kiemTraEmail(email)) {
-
-            model.addAttribute(
-                    "loi",
-                    "Email đã tồn tại!"
-            );
-
-            return "register";
+            model.addAttribute("loi", "Email đã tồn tại!");
+            return "auth/register";
         }
 
         service.dangKy(
@@ -71,28 +59,32 @@ public class TaiKhoanController {
         return "redirect:/login";
     }
 
-
     @GetMapping("/home")
     public String home() {
-
-        return "home";
+        return "redirect:/";
     }
-
 
     @GetMapping("/admin")
-    public String admin(Model model) {
-
-        model.addAttribute("danhSachTaiKhoan", service.layTatCa());
-        model.addAttribute("activePage", "admin");
-
-        return "admin";
+    public String admin() {
+        return "redirect:/admin/dashboard";
     }
 
+    @GetMapping("/admin/dashboard")
+    public String adminDashboard(Model model) {
+        model.addAttribute("activePage", "admin");
+        return "admin/dashboard";
+    }
 
-    @GetMapping("/user")
-    public String user() {
+    @GetMapping({"/quan-ly", "/quan-ly/dashboard"})
+    public String quanLyDashboard(Model model) {
+        model.addAttribute("activePage", "quan-ly");
+        return "quan-ly/dashboard";
+    }
 
-        return "user";
+    @GetMapping({"/user", "/nguoi-dung", "/nguoi-dung/dashboard"})
+    public String user(Model model) {
+        model.addAttribute("activePage", "nguoi-dung");
+        return "nguoi-dung/dashboard";
     }
 
     @PostMapping("/admin/xoa/{id}")
@@ -102,11 +94,11 @@ public class TaiKhoanController {
             RedirectAttributes redirectAttributes) {
 
         try {
-            service.xoaTaiKhoan(id, principal.getName());
+            service.xoaTaiKhoan(id, principal != null ? principal.getName() : "");
             redirectAttributes.addFlashAttribute("thongBaoThanhCong", "Đã xóa tài khoản ID " + id);
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("thongBaoLoi", e.getMessage());
         }
-        return "redirect:/admin";
+        return "redirect:/admin/tai-khoan/danh-sach";
     }
 }
