@@ -42,53 +42,44 @@ public class SecurityConfig {
                         "/register",
                         "/css/**",
                         "/js/**",
-                        "/images/**"
+                        "/images/**",
+                        "/webjars/**"
                 ).permitAll()
 
                 // Chỉ ADMIN
                 .requestMatchers("/admin/**")
                 .hasRole("ADMIN")
 
-                // USER và ADMIN
-                .requestMatchers("/user/**")
-                .hasAnyRole("USER", "ADMIN")
+                // QUẢN LÝ & ADMIN
+                .requestMatchers("/quan-ly/**")
+                .hasAnyRole("QUAN_LY", "ADMIN")
 
-                // Các thao tác GHI dữ liệu kho (lập phiếu nhập, nhà cung cấp, sản phẩm, lô hàng): chỉ ADMIN.
-                // USER vẫn XEM (GET) được các trang này, và vẫn lập được phiếu xuất (/phieuxuat/them)
-                // vì quy tắc "anyRequest().authenticated()" ở cuối cho phép mọi tài khoản đã đăng nhập.
+                // USER, QUẢN LÝ & ADMIN
+                .requestMatchers("/user/**", "/nguoi-dung/**")
+                .hasAnyRole("USER", "QUAN_LY", "ADMIN")
+
+                // Các thao tác GHI dữ liệu kho: ADMIN và QUẢN LÝ
                 .requestMatchers(HttpMethod.POST,
                         "/phieunhap/**",
                         "/nha-cung-cap/**",
                         "/san-pham/**",
                         "/lo-hang/**")
-                .hasRole("ADMIN")
+                .hasAnyRole("ADMIN", "QUAN_LY")
 
-                // Những URL còn lại
-                // phải đăng nhập
+                // Những URL còn lại: phải đăng nhập
                 .anyRequest()
                 .authenticated()
             )
-
 
             // =========================
             // LOGIN
             // =========================
 
             .formLogin(form -> form
-
                 .loginPage("/login")
-
                 .loginProcessingUrl("/login")
-
-                .defaultSuccessUrl(
-                        "/home",
-                        true
-                )
-
-                .failureUrl(
-                        "/login?error=true"
-                )
-
+                .defaultSuccessUrl("/", true)
+                .failureUrl("/login?error=true")
                 .permitAll()
             )
 

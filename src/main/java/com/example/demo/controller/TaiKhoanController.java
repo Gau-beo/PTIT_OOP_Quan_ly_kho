@@ -17,9 +17,7 @@ public class TaiKhoanController {
 
     private final NguoiDungService service;
 
-    public TaiKhoanController(
-            NguoiDungService service) {
-
+    public TaiKhoanController(NguoiDungService service) {
         this.service = service;
     }
 
@@ -28,11 +26,9 @@ public class TaiKhoanController {
     // LOGIN
     // =========================
 
-    // GET /login
     @GetMapping("/login")
     public String login() {
-
-        return "login";
+        return "auth/login";
     }
 
 
@@ -40,15 +36,11 @@ public class TaiKhoanController {
     // REGISTER
     // =========================
 
-    // GET /register
     @GetMapping("/register")
     public String register() {
-
-        return "register";
+        return "auth/register";
     }
 
-
-    // POST /register
     @PostMapping("/register")
     public String register(
             @RequestParam String hoTen,
@@ -57,21 +49,16 @@ public class TaiKhoanController {
             @RequestParam String diaChi,
             Model model) {
 
-        // Kiểm tra độ dài mật khẩu (phía server - không thể bị bỏ qua như kiểm tra trên trình duyệt)
+        // Kiểm tra độ dài mật khẩu phía server
         if (matKhau == null || matKhau.isBlank() || matKhau.length() < 6) {
             model.addAttribute("loi", "Mật khẩu phải có ít nhất 6 ký tự!");
-            return "register";
+            return "auth/register";
         }
 
         // Kiểm tra email
         if (service.kiemTraEmail(email)) {
-
-            model.addAttribute(
-                    "loi",
-                    "Email đã tồn tại!"
-            );
-
-            return "register";
+            model.addAttribute("loi", "Email đã tồn tại!");
+            return "auth/register";
         }
 
         // Lưu tài khoản
@@ -87,37 +74,42 @@ public class TaiKhoanController {
 
 
     // =========================
-    // HOME
+    // HOME & DASHBOARDS
     // =========================
 
     @GetMapping("/home")
     public String home() {
-
-        return "home";
+        return "redirect:/";
     }
-
-
-    // =========================
-    // ADMIN -> Quản lý tài khoản CRUD
-    // =========================
 
     @GetMapping("/admin")
     public String admin() {
-        return "redirect:/admin/tai-khoan";
+        return "redirect:/admin/dashboard";
+    }
+
+    @GetMapping("/admin/dashboard")
+    public String adminDashboard(Model model) {
+        model.addAttribute("activePage", "admin");
+        return "admin/dashboard";
+    }
+
+    @GetMapping({"/quan-ly", "/quan-ly/dashboard"})
+    public String quanLyDashboard(Model model) {
+        model.addAttribute("activePage", "quan-ly");
+        return "quan-ly/dashboard";
+    }
+
+    @GetMapping({"/user", "/nguoi-dung", "/nguoi-dung/dashboard"})
+    public String user(Model model) {
+        model.addAttribute("activePage", "nguoi-dung");
+        return "nguoi-dung/dashboard";
     }
 
 
     // =========================
-    // USER
+    // DELETE TAI KHOAN (Legacy URL support)
     // =========================
 
-    @GetMapping("/user")
-    public String user() {
-
-        return "user";
-    }
-
-    // POST /admin/xoa/{id}  (đường dẫn /admin/** đã được SecurityConfig giới hạn cho ADMIN)
     @PostMapping("/admin/xoa/{id}")
     public String xoaTaiKhoan(
             @PathVariable long id,
@@ -125,11 +117,11 @@ public class TaiKhoanController {
             RedirectAttributes redirectAttributes) {
 
         try {
-            service.xoaTaiKhoan(id, principal.getName());
+            service.xoaTaiKhoan(id, principal != null ? principal.getName() : "");
             redirectAttributes.addFlashAttribute("thongBaoThanhCong", "Đã xóa tài khoản ID " + id);
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("thongBaoLoi", e.getMessage());
         }
-        return "redirect:/admin";
+        return "redirect:/admin/tai-khoan/danh-sach";
     }
 }
