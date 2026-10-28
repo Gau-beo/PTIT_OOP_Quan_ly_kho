@@ -44,7 +44,7 @@ public class PhieuNhapController {
 
     @PostMapping("/phieunhap/them")
     public String taoPhieuNhap(
-            @RequestParam(required = false) Integer nhaCungCapId,   // SỬA: nhận id thay vì tên gõ tay
+            @RequestParam(required = false) Integer nhaCungCapId,
             @RequestParam(required = false) List<String> sanPhamId,
             @RequestParam(required = false) List<String> soLuong,
             @RequestParam(required = false) List<String> donGiaNhap,
@@ -74,7 +74,6 @@ public class PhieuNhapController {
             redirectAttributes.addFlashAttribute("thongBaoThanhCong",
                     "Đã tạo phiếu nhập #" + pn.getId() + " và sinh " + dong.size() + " lô hàng mới!");
         } catch (NumberFormatException | DateTimeParseException e) {
-            // SỬA: không hiện lỗi kỹ thuật thô (vd: For input string "abc") cho người dùng
             redirectAttributes.addFlashAttribute("thongBaoLoi",
                     "Không thể tạo phiếu nhập: số lượng, đơn giá hoặc ngày không hợp lệ.");
         } catch (Exception e) {

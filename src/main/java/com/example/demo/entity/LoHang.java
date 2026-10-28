@@ -47,7 +47,6 @@ public class LoHang {
         this.product = product;
     }
 
-    // Nghiệp vụ trạng thái hạn sử dụng (OOP logic)
     public boolean isHetHan() {
         return hanSuDung != null && hanSuDung.isBefore(LocalDate.now());
     }
@@ -72,7 +71,6 @@ public class LoHang {
         return "Còn hạn";
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

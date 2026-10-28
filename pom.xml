@@ -7,7 +7,6 @@
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>4.1.1</version>
 		<relativePath/>
-		<!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
 	<artifactId>Quan_ly_kho</artifactId>
@@ -65,14 +64,12 @@
 			<scope>test</scope>
 		</dependency>
         
-        <!-- Thư viện của nhánh main -->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>test</scope>
 		</dependency>
         
-        <!-- Thư viện của nhánh Quang -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>

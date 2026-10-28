@@ -15,8 +15,6 @@ import com.example.demo.service.NhaCungCapService;
 @RequestMapping("/nha-cung-cap")
 public class NhaCungCapController {
 
-    // SỬA: dùng constructor injection + đi qua Service (giống các controller khác),
-    // không gọi thẳng Repository bằng @Autowired trên field nữa.
     private final NhaCungCapService nhaCungCapService;
 
     public NhaCungCapController(NhaCungCapService nhaCungCapService) {

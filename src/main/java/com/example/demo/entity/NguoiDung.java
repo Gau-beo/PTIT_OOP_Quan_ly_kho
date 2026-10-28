@@ -20,11 +20,9 @@ public class NguoiDung {
     protected String matKhau;
     protected String vaiTro;
 
-    // Hàm tạo không tham số
     public NguoiDung() {
     }
 
-    // Hàm tạo có tham số
     public NguoiDung(String hoTen, String email, String matKhau, String vaiTro) {
         this.hoTen = hoTen;
         this.email = email;
@@ -32,7 +30,6 @@ public class NguoiDung {
         this.vaiTro = vaiTro;
     }
 
-    /** Đa hình: lớp con ghi đè để mô tả loại tài khoản. */
     public String getMoTaTaiKhoan() {
         return "Tài khoản";
     }

@@ -53,7 +53,6 @@ public abstract class Product {
     }
 
 
-    // ===== Đa hình (Polymorphism): mỗi lớp con tự định nghĩa =====
     public abstract String getThongTinRieng();
 
     public abstract LoaiSanPham getLoaiSanPham();
@@ -65,7 +64,6 @@ public abstract class Product {
         return loHangs.stream().mapToInt(LoHang::getSoLuong).sum();
     }
 
-    /** Tồn kho có thể xuất: không tính các lô đã hết hạn. */
     public int getTonKhoKhaDung() {
         if (loHangs == null) {
             return 0;

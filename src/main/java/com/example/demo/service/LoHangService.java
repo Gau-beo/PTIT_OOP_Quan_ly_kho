@@ -15,7 +15,6 @@ import com.example.demo.repository.LoHangRepository;
 @Transactional
 public class LoHangService {
 
-    /** Số ngày trước hạn được coi là "sắp hết hạn" (khớp với LoHang.isSapHetHan()). */
     private static final int SO_NGAY_SAP_HET_HAN = 30;
 
     private final LoHangRepository loHangRepository;
@@ -52,10 +51,6 @@ public class LoHangService {
         }).collect(Collectors.toList());
     }
 
-    /**
-     * Khai báo một lô hàng trực tiếp (dùng cho tồn đầu kỳ / hàng có sẵn trong kho).
-     * Hàng nhập thông thường nên đi qua Phiếu nhập để có chứng từ.
-     */
     public LoHang themLoHang(LoHang loHang) {
         String ma = loHang.getMaLoHang() == null ? "" : loHang.getMaLoHang().trim();
         if (ma.isEmpty()) {
@@ -80,10 +75,6 @@ public class LoHangService {
         return loHangRepository.save(loHang);
     }
 
-    /**
-     * Tiêu hủy lô đã hết hạn: đưa số lượng còn lại về 0 (lô vẫn được giữ lại để truy vết).
-     * @return số lượng đã tiêu hủy
-     */
     public int tieuHuyLoHang(Long id) {
         LoHang lo = layLoHangTheoId(id);
         if (!lo.isHetHan()) {
@@ -103,13 +94,11 @@ public class LoHangService {
         return loHangRepository.count();
     }
 
-    /** Các lô đã hết hạn mà vẫn còn hàng trong kho. */
     @Transactional(readOnly = true)
     public List<LoHang> layLoHangHetHan() {
         return loHangRepository.findByHanSuDungBeforeAndSoLuongGreaterThan(LocalDate.now(), 0);
     }
 
-    /** Các lô sắp hết hạn (trong vòng 30 ngày tới) và còn hàng. */
     @Transactional(readOnly = true)
     public List<LoHang> layLoHangSapHetHan() {
         LocalDate homNay = LocalDate.now();

@@ -1,8 +1,5 @@
 package com.example.demo.entity;
 
-/**
- * Liệt kê các loại sản phẩm con trong cây kế thừa của Product.
- */
 public enum LoaiSanPham {
     THUC_PHAM("Thực phẩm"),
     DE_VO("Hàng dễ vỡ"),

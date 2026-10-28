@@ -18,8 +18,6 @@ public class PhieuNhap {
     @Column(name = "tong_tien")
     private Double tongTien;
 
-    // SỬA: trước đây là String (gõ tự do). Giờ là khóa ngoại tới bảng nha_cung_cap.
-    // Phiếu cũ (tạo trước khi sửa) sẽ có giá trị null ở cột này -> template phải xử lý null.
     @ManyToOne
     @JoinColumn(name = "nha_cung_cap_id")
     private NhaCungCap nhaCungCap;

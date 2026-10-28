@@ -3,14 +3,11 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/navbar :: header('Quản lý sản phẩm')}"></head>
 <body>
-    <!-- Navbar -->
     <nav th:replace="~{fragments/navbar :: navbar}"></nav>
 
-    <!-- Alert Notifications -->
     <div th:replace="~{fragments/navbar :: alerts}"></div>
 
     <div class="container pb-5">
-        <!-- Tiêu đề trang -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h3 class="fw-bold mb-1"><i class="bi bi-box text-primary me-2"></i>Quản Lý Sản Phẩm</h3>
@@ -23,7 +20,6 @@
             </div>
         </div>
 
-        <!-- Bảng danh sách sản phẩm -->
         <div class="card shadow-sm">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <span class="fw-bold"><i class="bi bi-card-checklist me-2"></i>Danh Sách Sản Phẩm Trong Kho</span>
@@ -109,7 +105,6 @@
         </div>
     </div>
 
-    <!-- MODAL: SỬA SẢN PHẨM (một modal dùng chung, JS điền dữ liệu theo dòng được bấm) -->
     <div class="modal fade" id="modalSuaSanPham" tabindex="-1" aria-labelledby="modalSuaSanPhamLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -196,7 +191,6 @@
         </div>
     </div>
 
-    <!-- MODAL: THÊM SẢN PHẨM MỚI -->
     <div class="modal fade" id="modalThemSanPham" tabindex="-1" aria-labelledby="modalThemSanPhamLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -288,10 +282,8 @@
         </div>
     </div>
 
-    <!-- Bootstrap 5 Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Hiện đúng nhóm thuộc tính riêng theo loại; nhóm bị ẩn thì disable để không gửi lên server
         function hienNhomTheoLoai(selector, loai) {
             document.querySelectorAll(selector).forEach(function (g) {
                 var on = g.getAttribute('data-loai') === loai;
@@ -300,18 +292,16 @@
             });
         }
 
-        // Form THÊM: đổi nhóm theo loại được chọn
         (function () {
             var sel = document.getElementById('selLoai');
             sel.addEventListener('change', function () { hienNhomTheoLoai('.nhom-rieng', sel.value); });
             hienNhomTheoLoai('.nhom-rieng', sel.value);
         })();
 
-        // Form SỬA: điền dữ liệu của dòng được bấm rồi mở modal
         (function () {
             var modal = new bootstrap.Modal(document.getElementById('modalSuaSanPham'));
             var form = document.getElementById('formSuaSanPham');
-            var base = form.getAttribute('action').replace(/\/0\/sua$/, '/');   // .../san-pham/
+            var base = form.getAttribute('action').replace(/\/0\/sua$/, '/');
             document.querySelectorAll('.btn-sua-sp').forEach(function (btn) {
                 btn.addEventListener('click', function () {
                     var d = btn.dataset;

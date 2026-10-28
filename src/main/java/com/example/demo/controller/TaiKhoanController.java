@@ -24,11 +24,6 @@ public class TaiKhoanController {
     }
 
 
-    // =========================
-    // LOGIN
-    // =========================
-
-    // GET /login
     @GetMapping("/login")
     public String login() {
 
@@ -36,11 +31,6 @@ public class TaiKhoanController {
     }
 
 
-    // =========================
-    // REGISTER
-    // =========================
-
-    // GET /register
     @GetMapping("/register")
     public String register() {
 
@@ -48,7 +38,6 @@ public class TaiKhoanController {
     }
 
 
-    // POST /register
     @PostMapping("/register")
     public String register(
             @RequestParam String hoTen,
@@ -57,13 +46,11 @@ public class TaiKhoanController {
             @RequestParam String diaChi,
             Model model) {
 
-        // Kiểm tra độ dài mật khẩu (phía server - không thể bị bỏ qua như kiểm tra trên trình duyệt)
         if (matKhau == null || matKhau.isBlank() || matKhau.length() < 6) {
             model.addAttribute("loi", "Mật khẩu phải có ít nhất 6 ký tự!");
             return "register";
         }
 
-        // Kiểm tra email
         if (service.kiemTraEmail(email)) {
 
             model.addAttribute(
@@ -74,7 +61,6 @@ public class TaiKhoanController {
             return "register";
         }
 
-        // Lưu tài khoản
         service.dangKy(
                 hoTen,
                 email,
@@ -86,20 +72,12 @@ public class TaiKhoanController {
     }
 
 
-    // =========================
-    // HOME
-    // =========================
-
     @GetMapping("/home")
     public String home() {
 
         return "home";
     }
 
-
-    // =========================
-    // ADMIN
-    // =========================
 
     @GetMapping("/admin")
     public String admin(Model model) {
@@ -111,17 +89,12 @@ public class TaiKhoanController {
     }
 
 
-    // =========================
-    // USER
-    // =========================
-
     @GetMapping("/user")
     public String user() {
 
         return "user";
     }
 
-    // POST /admin/xoa/{id}  (đường dẫn /admin/** đã được SecurityConfig giới hạn cho ADMIN)
     @PostMapping("/admin/xoa/{id}")
     public String xoaTaiKhoan(
             @PathVariable long id,

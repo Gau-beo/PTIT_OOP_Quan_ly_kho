@@ -25,7 +25,6 @@ import com.example.demo.repository.ProductRepository;
 @Transactional
 public class PhieuXuatService {
 
-    /** FEFO: lô hết hạn sớm nhất xuất trước; cùng hạn thì lô nhập trước xuất trước. */
     private static final Comparator<LoHang> UU_TIEN_FEFO = Comparator
             .comparing(LoHang::getHanSuDung, Comparator.nullsLast(Comparator.<LocalDate>naturalOrder()))
             .thenComparing(LoHang::getNgayNhap, Comparator.nullsLast(Comparator.<LocalDate>naturalOrder()));
@@ -68,7 +67,6 @@ public class PhieuXuatService {
             Product product = productRepository.findById(item.getSanPhamId())
                     .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm ID: " + item.getSanPhamId()));
 
-            // Chỉ xuất từ các lô còn hàng và chưa hết hạn, ưu tiên theo FEFO
             List<LoHang> loKhaDung = product.getLoHangs().stream()
                     .filter(lh -> lh.getSoLuong() > 0 && !lh.isHetHan())
                     .sorted(UU_TIEN_FEFO)

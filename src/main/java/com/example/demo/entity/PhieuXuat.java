@@ -19,7 +19,6 @@ public class PhieuXuat {
     @Column(name = "nguoiNhan", length = 100)
     private String nguoiNhan;
 
-    // Ánh xạ khóa ngoại tới bảng NguoiDung
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "nguoiTaoId")
     private NguoiDung nguoiTao;
@@ -36,7 +35,6 @@ public class PhieuXuat {
         this.nguoiTao = nguoiTao;
     }
 
-    // PrePersist để tự động gán ngày hiện tại nếu không truyền vào
     @PrePersist
     protected void onCreate() {
         if (this.ngayXuat == null) {
@@ -44,7 +42,6 @@ public class PhieuXuat {
         }
     }
 
-    // Getters & Setters
     public Long getId() {
         return id;
     }

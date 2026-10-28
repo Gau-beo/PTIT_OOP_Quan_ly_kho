@@ -29,13 +29,8 @@ public class SecurityConfig {
 
         http
 
-            // =========================
-            // PHÂN QUYỀN
-            // =========================
-
             .authorizeHttpRequests(auth -> auth
 
-                // Ai cũng được truy cập
                 .requestMatchers(
                         "/error",
                         "/login",
@@ -45,17 +40,12 @@ public class SecurityConfig {
                         "/images/**"
                 ).permitAll()
 
-                // Chỉ ADMIN
                 .requestMatchers("/admin/**")
                 .hasRole("ADMIN")
 
-                // USER và ADMIN
                 .requestMatchers("/user/**")
                 .hasAnyRole("USER", "ADMIN")
 
-                // Các thao tác GHI dữ liệu kho (lập phiếu nhập, nhà cung cấp, sản phẩm, lô hàng): chỉ ADMIN.
-                // USER vẫn XEM (GET) được các trang này, và vẫn lập được phiếu xuất (/phieuxuat/them)
-                // vì quy tắc "anyRequest().authenticated()" ở cuối cho phép mọi tài khoản đã đăng nhập.
                 .requestMatchers(HttpMethod.POST,
                         "/phieunhap/**",
                         "/nha-cung-cap/**",
@@ -63,16 +53,10 @@ public class SecurityConfig {
                         "/lo-hang/**")
                 .hasRole("ADMIN")
 
-                // Những URL còn lại
-                // phải đăng nhập
                 .anyRequest()
                 .authenticated()
             )
 
-
-            // =========================
-            // LOGIN
-            // =========================
 
             .formLogin(form -> form
 
@@ -92,10 +76,6 @@ public class SecurityConfig {
                 .permitAll()
             )
 
-
-            // =========================
-            // LOGOUT
-            // =========================
 
             .logout(logout -> logout
 

@@ -40,7 +40,6 @@ public class WebController {
         this.sanPhamFactory = sanPhamFactory;
     }
 
-    // 1. TRANG BÁO CÁO & THỐNG KÊ (Trang chủ)
     @GetMapping({"/", "/thong-ke"})
     public String trangThongKe(Model model) {
         List<LoHang> loHangSapHetHan = loHangService.layLoHangSapHetHan();
@@ -60,7 +59,6 @@ public class WebController {
         return "thong-ke";
     }
 
-    // 2. TRANG TRA CỨU LÔ HÀNG
     @GetMapping("/lo-hang")
     public String trangTraCuuLoHang(
             @RequestParam(required = false, defaultValue = "") String keyword,
@@ -77,7 +75,6 @@ public class WebController {
         return "lo-hang";
     }
 
-    // Khai báo lô hàng (tồn đầu kỳ) từ giao diện Web
     @PostMapping("/lo-hang/them")
     public String themLoHang(
             @RequestParam String maLoHang,
@@ -101,7 +98,6 @@ public class WebController {
         return "redirect:/lo-hang";
     }
 
-    // Tiêu hủy lô đã hết hạn (đưa số lượng về 0, vẫn giữ lô để truy vết)
     @PostMapping("/lo-hang/{id}/tieu-huy")
     public String tieuHuyLoHang(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
@@ -114,7 +110,6 @@ public class WebController {
         return "redirect:/lo-hang";
     }
 
-    // 3. TRANG QUẢN LÝ SẢN PHẨM
     @GetMapping("/san-pham")
     public String trangSanPham(Model model) {
         model.addAttribute("danhSachSanPham", productService.layTatCaSanPham());
@@ -123,7 +118,6 @@ public class WebController {
         return "san-pham";
     }
 
-    // Thêm sản phẩm mới (Factory Pattern tạo đúng lớp con theo loại)
     @PostMapping("/san-pham/them")
     public String themSanPham(
             @RequestParam String maSanPham,
@@ -165,7 +159,6 @@ public class WebController {
         return "redirect:/san-pham";
     }
 
-    // Sửa sản phẩm (mã SP và loại SP giữ nguyên)
     @PostMapping("/san-pham/{id}/sua")
     public String suaSanPham(
             @PathVariable Long id,
@@ -189,7 +182,6 @@ public class WebController {
         return "redirect:/san-pham";
     }
 
-    // Xóa sản phẩm - chỉ khi chưa phát sinh lô hàng / phiếu nhập / phiếu xuất
     @PostMapping("/san-pham/{id}/xoa")
     public String xoaSanPham(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {

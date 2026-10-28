@@ -40,7 +40,7 @@ public class NhaCungCapService {
         if (nhaCungCapRepository.existsByTenNCCIgnoreCase(ncc.getTenNCC())) {
             throw new IllegalArgumentException("Nhà cung cấp '" + ncc.getTenNCC() + "' đã tồn tại!");
         }
-        ncc.setId(null); // đảm bảo luôn là INSERT, không ghi đè bản ghi có sẵn
+        ncc.setId(null);
         return nhaCungCapRepository.save(ncc);
     }
 
@@ -68,7 +68,6 @@ public class NhaCungCapService {
         nhaCungCapRepository.delete(ncc);
     }
 
-    /** Cắt khoảng trắng, đổi chuỗi rỗng thành null, kiểm tra tên và số điện thoại. */
     private void chuanHoaVaKiemTra(NhaCungCap ncc) {
         ncc.setTenNCC(ncc.getTenNCC() == null ? "" : ncc.getTenNCC().trim());
         ncc.setDiaChi(rongThanhNull(ncc.getDiaChi()));
@@ -78,11 +77,9 @@ public class NhaCungCapService {
         if (ncc.getTenNCC().isEmpty()) {
             throw new IllegalArgumentException("Tên nhà cung cấp không được để trống!");
         }
-        // Cho phép số, khoảng trắng, dấu + - . ( ), dài 8–20 ký tự
         if (ncc.getSdt() != null && !ncc.getSdt().matches("[0-9+\\-.() ]{8,20}")) {
             throw new IllegalArgumentException("Số điện thoại không hợp lệ (8–20 ký tự, chỉ gồm số và + - . ( ))!");
         }
-        // Kiểm tra email đơn giản: có dạng abc@xyz.tld
         if (ncc.getEmail() != null && !ncc.getEmail().matches("[^@\\s]+@[^@\\s]+\\.[^@\\s]+")) {
             throw new IllegalArgumentException("Email không hợp lệ!");
         }

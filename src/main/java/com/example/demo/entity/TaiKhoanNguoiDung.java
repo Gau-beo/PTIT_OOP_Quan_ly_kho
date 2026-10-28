@@ -7,12 +7,10 @@ public class TaiKhoanNguoiDung extends NguoiDung {
 
     private String diaChi;
 
-    // Hàm tạo không tham số
     public TaiKhoanNguoiDung() {
         super();
     }
 
-    // Hàm tạo có tham số
     public TaiKhoanNguoiDung(
             String hoTen,
             String email,

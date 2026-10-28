@@ -75,7 +75,6 @@
     </div>
 </div>
 
-<!-- MODAL: SỬA NHÀ CUNG CẤP (một modal dùng chung, JS điền dữ liệu theo dòng được bấm) -->
 <div class="modal fade" id="modalSuaNcc" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -116,7 +115,7 @@
     (function () {
         var modal = new bootstrap.Modal(document.getElementById('modalSuaNcc'));
         var form = document.getElementById('formSuaNcc');
-        var base = form.getAttribute('action').replace(/\/0$/, '/');   // .../nha-cung-cap/sua/
+        var base = form.getAttribute('action').replace(/\/0$/, '/');
         document.querySelectorAll('.btn-sua').forEach(function (btn) {
             btn.addEventListener('click', function () {
                 form.setAttribute('action', base + btn.dataset.id);

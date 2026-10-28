@@ -14,9 +14,6 @@ import com.example.demo.repository.NguoiDungRepository;
 import com.example.demo.repository.NhaCungCapRepository;
 import com.example.demo.repository.ProductRepository;
 
-/**
- * Nạp dữ liệu mẫu khi khởi động. Mọi thao tác đều "idempotent": chạy lại nhiều lần không tạo trùng.
- */
 @Component
 public class DataInitializer implements CommandLineRunner {
 
@@ -43,13 +40,11 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // 0. Dữ liệu cũ (lớp Product thường) -> chuyển thành THUC_PHAM vì Product nay là lớp trừu tượng
         int daChuyen = productRepository.chuyenLoaiCu();
         if (daChuyen > 0) {
             System.out.println("===> [DataInitializer] Đã chuyển " + daChuyen + " sản phẩm cũ sang loại THUC_PHAM");
         }
 
-        // 1. Tài khoản ADMIN mặc định
         if (!nguoiDungRepository.existsByEmail("admin@ptit.edu.vn")) {
             nguoiDungRepository.save(new TaiKhoanAdmin(
                     "Quản trị viên", "admin@ptit.edu.vn",
@@ -57,7 +52,6 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("===> [DataInitializer] Đã tạo tài khoản admin@ptit.edu.vn / admin123");
         }
 
-        // 2. Nhà cung cấp mẫu
         if (nhaCungCapRepository.count() == 0) {
             taoNcc("Vinamilk Việt Nam", "10 Tân Trào, Quận 7, TP.HCM", "02854155555");
             taoNcc("Acecook Việt Nam", "Lô II-3, KCN Tân Bình, TP.HCM", "02838154064");
@@ -65,7 +59,6 @@ public class DataInitializer implements CommandLineRunner {
             taoNcc("Coca-Cola Beverages", "485 Hà Huy Tập, Thủ Đức, TP.HCM", "02838962345");
         }
 
-        // 3. Sản phẩm mẫu (tạo qua Factory -> đủ 5 loại lớp con) + lô hàng mẫu
         LocalDate today = LocalDate.now();
 
         Product sp1 = timHoacTao(LoaiSanPham.THUC_PHAM, "SP001", "Sữa tươi tiệt trùng Vinamilk 1L", "Hộp", 35000.0,
@@ -99,13 +92,13 @@ public class DataInitializer implements CommandLineRunner {
                         ((SanPhamCongKenh) p).setPhuPhiVanChuyen(50000.0));
 
         taoLo("LH-VNM-01", today.minusMonths(2), today.plusMonths(4), 150, "Vinamilk Việt Nam", sp1);
-        taoLo("LH-VNM-02", today.minusMonths(5), today.plusDays(15), 50, "Vinamilk Việt Nam", sp1);   // sắp hết hạn
+        taoLo("LH-VNM-02", today.minusMonths(5), today.plusDays(15), 50, "Vinamilk Việt Nam", sp1);
         taoLo("LH-ACE-01", today.minusMonths(1), today.plusMonths(6), 300, "Acecook Việt Nam", sp2);
         taoLo("LH-SIM-01", today.minusWeeks(2), today.plusMonths(12), 200, "Cai Lan Oils", sp3);
-        taoLo("LH-MON-01", today.minusMonths(8), today.minusDays(5), 25, "Mondelez Kinh Đô", sp4);    // đã hết hạn
+        taoLo("LH-MON-01", today.minusMonths(8), today.minusDays(5), 25, "Mondelez Kinh Đô", sp4);
         taoLo("LH-MON-02", today.minusWeeks(1), today.plusMonths(5), 120, "Mondelez Kinh Đô", sp4);
         taoLo("LH-COC-01", today.minusMonths(3), today.plusMonths(9), 500, "Coca-Cola Beverages", sp5);
-        taoLo("LH-LUM-01", today.minusWeeks(3), null, 80, "Luminarc Việt Nam", sp6);                   // không có HSD
+        taoLo("LH-LUM-01", today.minusWeeks(3), null, 80, "Luminarc Việt Nam", sp6);
         taoLo("LH-SUN-01", today.minusMonths(1), today.plusYears(2), 150, "Unilever Việt Nam", sp7);
         taoLo("LH-SEN-01", today.minusWeeks(2), null, 40, "Senko Việt Nam", sp8);
         taoLo("LH-KES-01", today.minusDays(10), null, 20, "Xuân Hòa Việt Nam", sp9);
@@ -113,7 +106,6 @@ public class DataInitializer implements CommandLineRunner {
         System.out.println("===> [DataInitializer] Dữ liệu mẫu đã sẵn sàng!");
     }
 
-    /** Thời hạn sử dụng tiêu chuẩn (tháng) cho sản phẩm thực phẩm mẫu. */
     private static Consumer<Product> hanDung(int thang) {
         return p -> ((SanPhamThucPham) p).setThoiHanSuDungThang(thang);
     }

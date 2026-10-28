@@ -4,10 +4,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
-/**
- * Sản phẩm thực phẩm. Hạn dùng cụ thể được quản lý theo TỪNG LÔ (LoHang.hanSuDung),
- * còn ở cấp sản phẩm chỉ lưu "thời hạn sử dụng tiêu chuẩn" (số tháng) để tham khảo.
- */
 @Entity
 @DiscriminatorValue("THUC_PHAM")
 public class SanPhamThucPham extends Product {

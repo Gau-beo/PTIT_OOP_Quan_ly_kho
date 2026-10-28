@@ -12,7 +12,6 @@ public class SanPhamCongKenh extends Product {
     private Double phuPhiVanChuyen;
 
     public SanPhamCongKenh() {
-        // Hàm tạo rỗng thay thế cho @NoArgsConstructor
     }
 
     public SanPhamCongKenh(String maSp, String tenSanPham, String donViTinh, Double donGia, String ghiChu) {

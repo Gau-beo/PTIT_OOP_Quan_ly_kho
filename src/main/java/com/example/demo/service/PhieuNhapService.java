@@ -44,12 +44,6 @@ public class PhieuNhapService {
         return phieuNhapRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
     }
 
-    /**
-     * Tạo phiếu nhập: lưu phiếu + chi tiết, đồng thời sinh một lô hàng mới cho mỗi dòng
-     * (số lượng tồn kho của sản phẩm chính là tổng số lượng các lô).
-     *
-     * SỬA: nhà cung cấp giờ bắt buộc phải là một NCC có thật trong bảng nha_cung_cap (truyền vào bằng id).
-     */
     @Transactional
     public PhieuNhap taoPhieuNhap(Integer nhaCungCapId, List<ChiTietPhieuNhapRequest> dong) {
         if (nhaCungCapId == null) {
@@ -96,8 +90,6 @@ public class PhieuNhapService {
 
         PhieuNhap daLuu = phieuNhapRepository.save(phieuNhap);
 
-        // LoHang vẫn lưu tên NCC dạng chuỗi (ảnh chụp tại thời điểm nhập),
-        // nên ô tìm kiếm theo NCC ở trang Tra cứu lô hàng vẫn hoạt động như cũ.
         int stt = 1;
         for (ChiTietPhieuNhap ct : daLuu.getChiTietPhieuNhaps()) {
             String maLo = taoMaLoDuyNhat("LH-PN" + daLuu.getId() + "-" + stt++);
@@ -107,7 +99,6 @@ public class PhieuNhapService {
         return daLuu;
     }
 
-    /** Nếu mã lô tự sinh trùng với một lô đã nhập tay thì thêm hậu tố -2, -3... cho đến khi duy nhất. */
     private String taoMaLoDuyNhat(String maGoc) {
         String ma = maGoc;
         int hauTo = 2;

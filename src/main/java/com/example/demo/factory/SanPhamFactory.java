@@ -6,10 +6,6 @@ import org.springframework.stereotype.Component;
 
 import com.example.demo.entity.*;
 
-/**
- * Factory Pattern: khởi tạo đúng lớp con kế thừa từ Product theo loại sản phẩm,
- * và gán các thuộc tính riêng của từng lớp con từ dữ liệu form.
- */
 @Component
 public class SanPhamFactory {
 
@@ -23,10 +19,6 @@ public class SanPhamFactory {
         };
     }
 
-    /**
-     * Gán thuộc tính riêng của lớp con từ các tham số form (key = tên trường).
-     * Dùng pattern matching instanceof để downcast an toàn.
-     */
     public void capNhatThuocTinhRieng(Product product, Map<String, String> p) {
         if (product instanceof SanPhamThucPham tp) {
             tp.setThoiHanSuDungThang(docSoNguyen(p.get("thoiHanSuDungThang")));

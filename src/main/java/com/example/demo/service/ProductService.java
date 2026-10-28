@@ -53,13 +53,11 @@ public class ProductService {
         return productRepository.countTotalProducts();
     }
 
-    /** Tổng tồn kho, gồm cả lô đã hết hạn. */
     @Transactional(readOnly = true)
     public long layTongTonKho() {
         return productRepository.sumTotalInventory();
     }
 
-    /** Tồn kho khả dụng (không tính lô đã hết hạn). */
     @Transactional(readOnly = true)
     public long layTongTonKhoKhaDung() {
         return productRepository.sumAvailableInventory(LocalDate.now());
@@ -74,10 +72,6 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    /**
-     * Sửa thông tin sản phẩm. Mã sản phẩm và loại sản phẩm (lớp con) được giữ nguyên.
-     * Các thuộc tính riêng của lớp con được cập nhật qua Factory.
-     */
     public Product capNhatSanPham(Long id, String tenSanPham, String donViTinh, Double donGia,
                                   String ghiChu, Map<String, String> thuocTinhRieng) {
         Product product = laySanPhamTheoId(id);
@@ -97,10 +91,6 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    /**
-     * Xóa sản phẩm - chỉ khi sản phẩm chưa phát sinh dữ liệu nào (lô hàng, phiếu nhập, phiếu xuất)
-     * để không mất dấu vết kho. (Lưu ý: Product.loHangs để cascade ALL nên bắt buộc phải chặn ở đây.)
-     */
     public void xoaSanPham(Long id) {
         Product product = laySanPhamTheoId(id);
         if (loHangRepository.existsByProduct_Id(id)) {

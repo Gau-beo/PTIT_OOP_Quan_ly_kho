@@ -7,12 +7,10 @@ public class TaiKhoanAdmin extends NguoiDung {
 
     private String chucVu;
 
-    // Hàm tạo không tham số
     public TaiKhoanAdmin() {
         super();
     }
 
-    // Hàm tạo có tham số
     public TaiKhoanAdmin(
             String hoTen,
             String email,

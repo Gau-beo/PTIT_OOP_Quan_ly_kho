@@ -36,24 +36,20 @@ public class NguoiDungService {
         return repository.findAll();
     }
 
-    // Kiểm tra email đã tồn tại
     public boolean kiemTraEmail(String email) {
 
         return repository.existsByEmail(email);
     }
 
-    // Đăng ký tài khoản người dùng
     public TaiKhoanNguoiDung dangKy(
             String hoTen,
             String email,
             String matKhau,
             String diaChi) {
 
-        // Mã hóa mật khẩu
         String matKhauMaHoa =
                 passwordEncoder.encode(matKhau);
 
-        // Tạo tài khoản người dùng
         TaiKhoanNguoiDung nguoiDung =
                 new TaiKhoanNguoiDung(
                         hoTen,
@@ -66,12 +62,6 @@ public class NguoiDungService {
         return repository.save(nguoiDung);
     }
 
-    /**
-     * Admin xóa một tài khoản. Các chốt chặn:
-     *  - không xóa tài khoản ADMIN (kể cả chính mình);
-     *  - không xóa tài khoản đã từng lập phiếu xuất (để không mất dấu vết người thực hiện
-     *    và tránh vi phạm khóa ngoại trong DB).
-     */
     @Transactional
     public void xoaTaiKhoan(long id, String emailDangDangNhap) {
         NguoiDung nd = repository.findById(id)

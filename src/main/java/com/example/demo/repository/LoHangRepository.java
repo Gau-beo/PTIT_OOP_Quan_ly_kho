@@ -13,10 +13,8 @@ public interface LoHangRepository extends JpaRepository<LoHang, Long> {
 
     boolean existsByMaLoHang(String maLoHang);
 
-    // Dùng để chặn xóa sản phẩm đã có lô hàng
     boolean existsByProduct_Id(Long productId);
 
-    // Cảnh báo chỉ tính các lô CÒN HÀNG (soLuong > 0)
     List<LoHang> findByHanSuDungBeforeAndSoLuongGreaterThan(LocalDate ngay, int soLuong);
 
     List<LoHang> findByHanSuDungBetweenAndSoLuongGreaterThan(LocalDate tu, LocalDate den, int soLuong);
