@@ -61,6 +61,7 @@ public class SecurityConfig {
                 // Các thao tác GHI dữ liệu kho: ADMIN và QUẢN LÝ
                 .requestMatchers(HttpMethod.POST,
                         "/phieunhap/**",
+                        "/phieuxuat/**",
                         "/nha-cung-cap/**",
                         "/san-pham/**",
                         "/lo-hang/**")

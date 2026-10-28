@@ -12,7 +12,7 @@
             <h3 class="fw-bold mb-1"><i class="bi bi-box-arrow-up text-danger me-2"></i>Quản Lý Phiếu Xuất</h3>
             <p class="text-muted mb-0">Hệ thống tự trừ tồn kho theo nguyên tắc FEFO (lô hết hạn sớm nhất xuất trước), bỏ qua lô đã hết hạn</p>
         </div>
-        <button type="button" class="btn btn-danger shadow-sm" data-bs-toggle="modal" data-bs-target="#modalPhieuXuat">
+        <button type="button" sec:authorize="hasAnyRole('ADMIN', 'QUAN_LY')" class="btn btn-danger shadow-sm" data-bs-toggle="modal" data-bs-target="#modalPhieuXuat">
             <i class="bi bi-plus-circle me-1"></i> Tạo phiếu xuất
         </button>
     </div>
